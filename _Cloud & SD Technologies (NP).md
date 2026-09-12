@@ -1,12 +1,12 @@
 
-<!-- Your monitor number = #$34T# -->
+<!-- Your monitor number = 21 -->
 
 
-## ⛅ Warm Up for Day 2.
+## â›… Warm Up for Day 2.
 
 <br>
 
-### 🔧 Physically Connect the following:
+### ðŸ”§ Physically Connect the following:
 | Device   | Port       |  -  | Port   | Switch   |
 | ---      | ---        | --- | ---    | ---      |
 | PC       | TunayNaLAN |  -  | fa0/1  | CoreBABA |
@@ -29,6 +29,8 @@
 &nbsp;
 
 ## Day 1 via Ansible
+
+![Ansible](img/Ansible.png)
 
 <br>
 <br>
@@ -57,8 +59,8 @@
 ### Step 1 - Add routing to PC
 ~~~
 !@cmd
-route add 10.0.0.0 mask 255.0.0.0 10.#$34T#.1.4
-route add 200.0.0.0 mask 255.255.255.0 10.#$34T#.1.4
+route add 10.0.0.0 mask 255.0.0.0 10.21.1.4
+route add 200.0.0.0 mask 255.255.255.0 10.21.1.4
 ~~~
 
 <br>
@@ -69,7 +71,7 @@ route add 200.0.0.0 mask 255.255.255.0 10.#$34T#.1.4
 conf t
  int vlan 1
   no shut
-  ip add 10.#$34T#.1.2 255.255.255.0
+  ip add 10.21.1.2 255.255.255.0
   desc mgmtData-configuredManually
   exit
   enable secret pass
@@ -88,7 +90,7 @@ conf t
 conf t
  int vlan 1
   no shut
-  ip add 10.#$34T#.1.4 255.255.255.0
+  ip add 10.21.1.4 255.255.255.0
   desc mgmtData-configuredManually
   exit
  vlan 100
@@ -96,7 +98,7 @@ conf t
   exit
  int vlan 100
   no shut
-  ip add 10.#$34T#.100.4 255.255.255.0
+  ip add 10.21.100.4 255.255.255.0
   desc vlanMgmtVoice-configuredManually
   exit
  int fa 0/3
@@ -106,10 +108,10 @@ conf t
  int gi0/1
   no switchport
   no shut 
-  ip add 10.#$34T#.#$34T#.4 255.255.255.0
+  ip add 10.21.21.4 255.255.255.0
   exit
  ip routing
- ip route 0.0.0.0 0.0.0.0 10.#$34T#.#$34T#.1 120
+ ip route 0.0.0.0 0.0.0.0 10.21.21.1 120
  enable secret pass
  line vty 0 14
   password pass
@@ -126,10 +128,10 @@ conf t
 conf t
  int fa0/0
   no shut
-  ip add 10.#$34T#.100.8 255.255.255.0
+  ip add 10.21.100.8 255.255.255.0
   exit
  ip routing
- ip route 0.0.0.0 0.0.0.0 10.#$34T#.100.4 120
+ ip route 0.0.0.0 0.0.0.0 10.21.100.4 120
  enable secret pass
  line vty 0 14
   password pass
@@ -145,11 +147,11 @@ conf t
 !@edge
 conf t
  int gi 0/0/0
-  ip add 10.#$34T#.#$34T#.1 255.255.255.0
+  ip add 10.21.21.1 255.255.255.0
   no shut
   exit
  ip routing
- ip route 10.#$34T#.0.0 255.255.0.0 10.#$34T#.#$34T#.4 120
+ ip route 10.21.0.0 255.255.0.0 10.21.21.4 120
  enable secret pass
  line vty 0 14
   password pass
@@ -167,10 +169,10 @@ conf t
 On SecureCRT:
 | IP                 | Device   |
 | ---                | ---      |
-| 10.#$34T#.1.2	     | CoreTaas |
-| 10.#$34T#.1.4      | CoreBaba |
-| 10.#$34T#.100.8    | CUCM     |
-| 10.#$34T#.#$34T#.1 | EDGE     |
+| 10.21.1.2	     | CoreTaas |
+| 10.21.1.4      | CoreBaba |
+| 10.21.100.8    | CUCM     |
+| 10.21.21.1 | EDGE     |
 
 &nbsp;
 ---
@@ -200,7 +202,7 @@ sh mac address-table
 For an SSH connection to be established, the device must have:  
 | Description                      | Command                                  |
 | ---                              | ---                                      |
-| a non-default hostname           | hostname coreBaba#$34T#                  |
+| a non-default hostname           | hostname coreBaba21                  |
 | a domain name                    | ip domain name day1lab.com               |
 | a local user account             | username admin privilege 15 secret pass  |
 | generated crypto keys            | crypto key generate rsa modulus 2048     |
@@ -223,7 +225,7 @@ Extra lines
 ~~~
 !@coreTaas
 conf t
- hostname coreTaas-#$34T#
+ hostname coreTaas-21
  service password-encryption
  no logging console
  no ip domain-lookup
@@ -245,7 +247,7 @@ conf t
 ~~~
 !@coreBaba
 conf t
- hostname coreBaba-#$34T#
+ hostname coreBaba-21
  service password-encryption
  no logging console
  no ip domain-lookup
@@ -267,7 +269,7 @@ conf t
 ~~~
 !@cucm
 conf t
- hostname cucm-#$34T#
+ hostname cucm-21
  service password-encryption
  no logging console
  no ip domain-lookup
@@ -288,7 +290,7 @@ conf t
 ~~~
 !@edge
 conf t
- hostname edge-#$34T#
+ hostname edge-21
  service password-encryption
  no logging console
  no ip domain-lookup
@@ -356,7 +358,7 @@ conf t
   ip add 192.168.102.11 255.255.255.0
   no shut
  int g3
-  ip add 11.11.11.113 255.255.255.224
+  ip add 10.11.11.113 255.255.255.224
   no shut
  !
  username admin privilege 15 secret pass
@@ -400,16 +402,16 @@ ip -br link
 
 3. Modify Interface IP  
 VMNet2:  192.168.102.6/24  
-VMNet3:  11.11.11.100/27  
-Bridged: 10.#$34T#.1.6/24  
+VMNet3:  10.11.11.100/27  
+Bridged: 10.21.1.6/24  
 
 <br>
 
 ~~~
 !@NetOps-PH
 ifconfig ens192 192.168.102.6 netmask 255.255.255.0 up
-ifconfig ens224 11.11.11.100 netmask 255.255.255.224 up
-ifconfig ens256 10.#$34T#.1.6 netmask 255.255.255.0 up
+ifconfig ens224 10.11.11.100 netmask 255.255.255.224 up
+ifconfig ens256 10.21.1.6 netmask 255.255.255.0 up
 ~~~
 
 <br>
@@ -451,7 +453,7 @@ type ethernet \
 con-name VMNET3 \
 ifname ens224 \
 ipv4.method manual \
-ipv4.addresses 11.11.11.100/27 \
+ipv4.addresses 10.11.11.100/27 \
 autoconnect yes
 
 nmcli connection up VMNET3
@@ -461,14 +463,14 @@ type ethernet \
 con-name BRIDGED \
 ifname ens256 \
 ipv4.method manual \
-ipv4.addresses 10.#$34T#.1.6/24 \
+ipv4.addresses 10.21.1.6/24 \
 autoconnect yes
 
 nmcli connection up BRIDGED
 
-ip route add 10.0.0.0/8 via 10.#$34T#.1.4 dev ens256
-ip route add 200.0.0.0/24 via 10.#$34T#.1.4 dev ens256
-ip route add 0.0.0.0/0 via 11.11.11.113 dev ens224
+ip route add 10.0.0.0/8 via 10.21.1.4 dev ens256
+ip route add 200.0.0.0/24 via 10.21.1.4 dev ens256
+ip route add 0.0.0.0/0 via 10.11.11.113 dev ens224
 ~~~
 
 &nbsp;
@@ -496,17 +498,17 @@ rm -rf /root/.ssh/known_hosts
 SSH to the ff devices:
 ~~~
 !@NetOps
-ssh admin@10.#$34T#.1.2
+ssh admin@10.21.1.2
 ~~~
 
 <br>
 
 | IP                 | Device   |
 | ---                | ---      |
-| 10.#$34T#.1.2      | CoreTaas |
-| 10.#$34T#.1.4      | CoreBaba |
-| 10.#$34T#.100.8    | CUCM     |
-| 10.#$34T#.#$34T#.1 | EDGE     |
+| 10.21.1.2      | CoreTaas |
+| 10.21.1.4      | CoreBaba |
+| 10.21.100.8    | CUCM     |
+| 10.21.21.1 | EDGE     |
 
 <br>
 
@@ -532,7 +534,7 @@ cd SSHAUTOMATE/_Ansible/Ex\ 02\ -\ Day1/__day1_project/
 Camera MAC Addresses:  
 ~~~
 !@NetOps
-nano host_vars/cbaba_#$34T#.yml
+nano host_vars/cbaba_21.yml
 ~~~
 
 <br>
@@ -540,7 +542,7 @@ nano host_vars/cbaba_#$34T#.yml
 EPhone MAC Addresses:
 ~~~
 !@NetOps
-nano host_vars/cucm_#$34T#.yml
+nano host_vars/cucm_21.yml
 ~~~
 
 &nbsp;
@@ -550,7 +552,7 @@ nano host_vars/cucm_#$34T#.yml
 ### Step 10 - Run the Playbook
 ~~~
 !@NetOps
-ansible-playbook -i rivan_mkt.ini playbooks/deploy_#$34T#.yml --skip-tags ivrs
+ansible-playbook -i rivan_mkt.ini playbooks/deploy_21.yml --skip-tags ivrs
 ~~~
 
 
@@ -561,12 +563,67 @@ ansible-playbook -i rivan_mkt.ini playbooks/deploy_#$34T#.yml --skip-tags ivrs
 &nbsp;
 
 
-### 🎯 Exercise 01: Add Loopback via Ansible
+### ðŸŽ¯ Exercise 01: Add Loopback via Ansible
+__Public Key Authentication__
+~~~
+!@NetOps
+mkdir /etc/ansible/keys
+ssh-keygen -t rsa -b 2048 -f /etc/ansible/keys/adminph.key
+~~~
+
+
+<br>
+
+
+__Output at a minimum 46 chars__
+~~~
+!@NetOps
+fold -w 46 /etc/ansible/keys/adminph.key.pub
+~~~
+
+
+<br>
+
+
+__Decrypt the Key__
+~~~
+!@NetOps
+ssh-keygen -p -f /etc/ansible/keys/adminph.key
+~~~
+
+
+<br>
+
+
+__Make Cisco use Pubkey__
+~~~
+!@UTM-PH
+conf t
+ ip ssh pubkey-chain
+  user admin
+   key-string
+ 
+ <Paste PUBLIC KEY>
+~~~
+
+
+<br>
+
 
 __Verify Hosts__
 ~~~
 !@NetOps
-ssh admin@192.168.102.11
+ssh -i /etc/ansible/keys/adminph.key admin@192.168.102.11
+~~~
+
+
+<br>
+
+
+Install if needed
+~~~
+!@NetOps
+pip install ansible-pylibssh
 ~~~
 
 
@@ -589,7 +646,7 @@ cd /etc/ansible ; nano hosts
 
 [utmph:vars]
 ansible_user=admin
-ansible_password=pass
+ansible_ssh_private_key_file=/etc/ansible/keys/adminph.key
 ansible_port=22
 ansible_network_os=ios
 ansible_connection=network_cli
@@ -773,8 +830,22 @@ resource "iosxe_interface_loopback" "example" {
 &nbsp;
 
 ## SDN (Software Defined Networking)
+*https://account.meraki.com/login/*
+
+<br>
 
 __Control Plane (vSmart)__ - The part of the device that makes routing and network decisions. builds and maintains the network topology and make decisions on the traffic flows. The vSmart controller disseminates control plane information between WAN Edge devices, implements control plane policies and distributes data plane policies to network devices for enforcement.
+
+~~~
+!@Cisco
+show processes cpu sorted
+show ip route
+show ip ospf database
+show ip bgp
+show ip eigrp topology
+show spanning-tree
+show policy-map control-plane
+~~~
 
 
 <br>
@@ -783,6 +854,15 @@ __Control Plane (vSmart)__ - The part of the device that makes routing and netwo
 
 __Data Plane (vEdge)__ - The part that forwards packets according to rules calculated by the control plane. WAN Edge devices are responsible for establishing secure connections for traffic forwarding, for security, encryption, Quality of Service (QoS) enforcement and more.
 
+~~~
+!@Cisco
+show ip nat translations
+show interfaces counters protocol status 
+show access-lists
+show policy-map interface
+ping / traceroute
+~~~
+
 
 <br>
 <br>
@@ -790,12 +870,19 @@ __Data Plane (vEdge)__ - The part that forwards packets according to rules calcu
 
 __Management Plane (vManage)__ - the instance where the user interacts with the device. It is responsible for central configuration and monitoring. The vManage controller is the centralized network management system that provides a single pane of glass GUI interface to easily deploy, configure, monitor and troubleshoot all Cisco SD-WAN components in the network.
 
+- SSH/Telnet Access
+- SNMP
+- Syslog, NetFlow
+- NTP, Logging
+
 
 <br>
 <br>
 
 
 __Orchestration Plane (vBond)__ - Policy distribution and Overlay control. Centralized Control. Assists in securely onboarding the SD-WAN WAN Edge routers into the SD-WAN overlay. The vBond controller, or orchestrator, authenticates and authorizes the SD-WAN components onto the network.
+- Control Node
+- SDN Controller
 
 
 &nbsp;
@@ -803,7 +890,50 @@ __Orchestration Plane (vBond)__ - Policy distribution and Overlay control. Centr
 &nbsp;
 
 
+### SDN Elements
+~~~
+User
+ V
+
+Northbound Int/API
+ V - RESTCONF, NETCONF, ONOS (Open Network Operating System)
+
+SDN Controller - Cisco APIC (Application Policy Infra Controller) or Cisco DNA (Digital Network Architecture) Center
+ V
+
+Southbound Int/API
+ V - RESTCONF,  NETCONF, OpenFlow, OVSDB (Open vSwitch DB), gNMI (gRPC Network Management Interface)
+
+Network Devices
+~~~
+
+
+<br>
+<br>
+
+---
+&nbsp;
+
 ## SD-WAN
+*https://www.cisco.com/c/dam/en/us/td/docs/solutions/CVD/SDWAN/sdwan-wan-edge-onboarding-deploy-guide-2020nov.pdf*  
+
+![SDWAN](img/SDWAN.JPG)
+
+<br>
+<br>
+
+
+Each component authenticates each other and if successful, a Datagram Transport Layer Security (DTLS) tunnel is established.  
+
+Separating the control plane from the data and management plane,  
+the protocol that vSmart uses to communicate all the WAN Edge routing is called Overlay Management Protocol (OMP)  
+
+
+<br>
+<br>
+
+---
+&nbsp;
 
 ### Resource Requirements
 __EVENG VM__
@@ -1050,6 +1180,8 @@ Name: VE-SYSTEM
 Desc: VE-SYSTEM
 
 Console Baud Rate(bps): 9600
+
+GPS - Longitude & Latitude
 ~~~
 
 
@@ -1255,26 +1387,33 @@ Transport & Management VPN:
 
 ### STEP 17 - Assign Correct Values Per device
 
+PerDevice Edit:
+  - VISAYAS
+  - IPv4 (g0/1): 192.168.20.1/24
+  - IPv4 (g0/0): 172.16.1.1/30
+  - Hostname: vEDGE-VISAYAS
+  - Latitude/Longitude: 3 deci
+  - System IP: 10.1.25.1
+  - Site ID: 25
+
 
 &nbsp;
 ---
 &nbsp;
 
 
-### 🎯 Exercise 02: Add Template for a user account
+### ðŸŽ¯ Exercise 02: Add Template for a user account
 
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
+`Configuration` > `Templates` > `Feature Templates` > `vEdge Cloud` > `AAA`
+
+~~~
+Name: VE-ACC
+Desc: VE-ACC
+
+Auth Order: Local Only
+Add User: admin C1sc0123
+          rivan C1sc0123
+~~~
 
 
 <br>
@@ -1499,6 +1638,178 @@ conf t
   end
 ~~~
 
+<br>
+
+~~~
+!@vEdge-MINDANAO (Optional)
+conf t
+ system
+  host-name vEdge-MINDANAO
+  system-ip 10.1.29.1
+  site-id 29
+  organization-name RIVANCORP
+  admin-tech-on-failure
+  vbond 172.16.10.3
+ vpn 0
+  name "Transport VPN"
+   router
+    no bgp 100
+    bgp 100
+	 address-family ipv4-unicast
+	  network 192.168.20.0/24
+	  exit
+	 neighbor 192.168.20.6 remote-as 1
+	 exit
+	exit
+   exit
+  int ge0/0
+   description LAN-Traffic
+   ip address 172.16.9.1/30
+   tunnel-interface
+    encapsulation ipsec
+	color private1 restrict
+    allow-service all
+    no shut
+	exit
+  int ge0/1
+   description INTERNET-Traffic
+   ip add 192.168.20.9/24
+   tunnel-interface
+    encapsulation ipsec
+    color biz-internet
+    allow-service all
+	no shut
+	exit
+   exit
+  int ge0/2
+   no description
+   no ip add
+   shutdown
+   no tunnel-interface
+   exit
+  vpn 512
+   name "Management VPN"
+   interface eth0
+    description eth0
+    ip dhcp-client
+    no shutdown
+	commit
+	end
+~~~
+
+
+<br>
+
+
+### STEP 1 - Export Root CA
+~~~
+!@PKI-Server
+conf t
+ crypto pki export rivanpki pem terminal
+
+
+~~~
+
+
+&nbsp;
+---
+&nbsp;
+
+
+### STEP 2 - Setup Chain-of-trust on vEDGE
+~~~
+!@vEdge-MINDANAO
+vshell
+
+mkdir /home/admin/pkicerts
+cd /home/admin/pkicerts
+vim rivanpki.ca
+
+     HOW TO USE VIM
+		-> press ENTER
+		-> press "i" for insert mode
+		-> then, paste the root ca
+		-> press "esc" button
+		-> enter ":wq" which means write quit"
+~~~
+
+
+&nbsp;
+---
+&nbsp;
+
+
+### STEP 3 - Generate Certificate Signing Requests
+~~~
+!@vEdge-MINDANAO
+request root-cert-chain install /home/admin/pkicerts/rivanpki.ca
+request csr upload /home/admin/pkicerts/mindanao.csr
+
+vshell
+
+cat /home/admin/pkicerts/mindanao.csr
+
+~~~
+
+
+&nbsp;
+---
+&nbsp;
+
+
+### STEP 4 - Sign the CSR 
+~~~
+!@PKI-Server
+crypto pki server rivanpki request pkcs10 terminal
+
+~~~
+
+
+&nbsp;
+---
+&nbsp;
+
+
+### STEP 5 - Import Signed CSR
+~~~
+!@vEdge-MINDANAO
+vshell
+
+vim /home/admin/pkicerts/grant.ca
+
+     HOW TO USE VIM
+		-> press ENTER
+		-> press "i" for insert mode
+		-> then, paste the root ca
+		-> press "esc" button
+		-> enter ":wq" which means write quit"
+~~~
+
+
+&nbsp;
+---
+&nbsp;
+
+
+### STEP 6 - Install Certificates
+~~~
+!@vEdge-MINDANAO
+request certificate install /home/admin/pkicerts/grant.ca
+show certificate serial
+~~~
+
+
+&nbsp;
+---
+&nbsp;
+
+
+### STEP 7 - Onboard to vManage & vBond
+~~~
+!@vManage, vBond
+request vedge add chassis-num xxxxxx-xxxx-xxxx-xxxx-35b26f5d569a serial-num xx
+~~~
+
 
 <br>
 <br>
@@ -1507,11 +1818,11 @@ conf t
 &nbsp;
 
 
-### 🎯 Exercise 03: Setup Trunking, Etherchannel, & MST on CoreTAAS & CoreBABA
+### ðŸŽ¯ Exercise 03: Setup Trunking, Etherchannel, & MST on CoreTAAS & CoreBABA
 ~~~
 !@CoreTAAS
 conf t
- hostname coreTaas-#$34T#
+ hostname coreTaas-21
  enable secret pass
  service password-encryption
  no logging console
@@ -1526,19 +1837,19 @@ conf t
   exec-timeout 0 0
  int vlan 1
   no shut
-  ip add 10.#$34T#.1.2 255.255.255.0
+  ip add 10.21.1.2 255.255.255.0
   desc DEFAULT-VLAN
  int vlan 10
   no shut
-  ip add 10.#$34T#.10.2 255.255.255.0
+  ip add 10.21.10.2 255.255.255.0
   desc WIFI-VLAN
  int vlan 50
   no shut
-  ip add 10.#$34T#.50.2 255.255.255.0
+  ip add 10.21.50.2 255.255.255.0
   desc CCTV-VLAN
  int vlan 100
   no shut
-  ip add 10.#$34T#.100.2 255.255.255.0
+  ip add 10.21.100.2 255.255.255.0
   desc VOICE-VLAN
  end
 ~~~
@@ -1550,7 +1861,7 @@ conf t
 ~~~
 !@CoreBABA
 conf t
- hostname coreBaba-#$34T#
+ hostname coreBaba-21
  enable secret pass
  service password-encryption
  no logging console
@@ -1566,26 +1877,151 @@ conf t
  int gi 0/1
   no shut
   no switchport
-  ip add 10.#$34T#.#$34T#.4 255.255.255.0
+  ip add 10.21.21.4 255.255.255.0
  int vlan 1
   no shut
-  ip add 10.#$34T#.1.4 255.255.255.0
+  ip add 10.21.1.4 255.255.255.0
   desc DEFAULT-VLAN
  int vlan 10
   no shut
-  ip add 10.#$34T#.10.4 255.255.255.0
+  ip add 10.21.10.4 255.255.255.0
   desc WIFI-VLAN
  int vlan 50
   no shut
-  ip add 10.#$34T#.50.4 255.255.255.0
+  ip add 10.21.50.4 255.255.255.0
   desc CCTV-VLAN
  int vlan 100
   no shut
-  ip add 10.#$34T#.100.4 255.255.255.0
+  ip add 10.21.100.4 255.255.255.0
   desc VOICE-VLAN
  end
 ~~~
 
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+&nbsp;
+---
+&nbsp;
+
+### ANSWER
+<details>
+<summary>Show Answer</summary>
+
+~~~
+!@CoreTAAS, CoreBABA
+conf t
+ int range fa0/10-12
+  channel-group 1 mode active
+  channel-protocol lacp
+  exit
+ int po1
+  switchport trunk encaps dot1q
+  switchport mode trunk
+  switchport trunk allowed vlan all
+  switchport trunk native vlan 1
+  exit
+ !
+ vtp domain ccnp
+ vtp password pass
+ vtp mode server
+ vtp version 2
+ !
+ vlan 10
+  name WIFIVLAN
+ vlan 50
+  name CCTVVLAN
+ vlan 100
+  name VOICEVLAN
+  exit
+ !
+ spanning-tree mode mst
+ spanning-tree mst configuration
+  name SUPERMAN-STP
+  revision 1
+   instance 1 vlan 1,10
+   instance 2 vlan 50,100
+   end
+show int trunk
+~~~
+
+<br>
+
+~~~
+!@CoreTAAS
+conf t
+ spanning-tree mst 0 root primary
+ spanning-tree mst 1 root secondary
+ spanning-tree mst 2 root primary
+ end
+~~~
+
+<br>
+
+~~~
+!@CoreBABA
+conf t
+ spanning-tree mst 0 root secondary
+ spanning-tree mst 1 root primary
+ spanning-tree mst 2 root secondary
+ end
+~~~
+
+<br>
+
+__STP Features__
+~~~
+!@CoreBABA
+conf t
+ int range fa0/1-9
+  spanning-tree portfast
+  spanning-tree bpduguard enable
+  exit
+ spanning-tree uplinkfast
+ end
+~~~
+
+<br>
+
+~~~
+!@CoreTAAS
+conf t
+ spanning-tree backbonefast
+~~~
+
+</details>
 
 
 <br>
@@ -1601,9 +2037,9 @@ conf t
 config t
 dial-peer voice 69 voip
  service rivanaa out-bound
- destination-pattern #$34T#69
- session target ipv4:10.#$34T#.100.1
- incoming called-number #$34T#69
+ destination-pattern 2169
+ session target ipv4:10.21.100.1
+ incoming called-number 2169
  dtmf-relay h245-alphanumeric
  codec g711ulaw
  no vad
@@ -1626,120 +2062,17 @@ application
   param max-time-vm-retry 2
   param voice-mail 1234
   param max-time-call-retry 700
-  param aa-pilot #$34T#69
+  param aa-pilot 2169
  service rivanqueue flash:app-b-acd-3.0.0.2.tcl
   param queue-len 15
-  param aa-hunt1 #$34T#00
-  param aa-hunt2 #$34T#77
-  param aa-hunt3 #$34T#01
-  param aa-hunt4 #$34T#33
+  param aa-hunt1 2100
+  param aa-hunt2 2177
+  param aa-hunt3 2101
+  param aa-hunt4 2133
   param queue-manager-debugs 1
   param number-of-hunt-grps 4
   end
 ~~~
-
-
-<br>
-<br>
-
----
-&nbsp;
-
-
-## Quality of Service
-*Why need QoS? Periodic Congestion*
-
-
-
-
-&nbsp;
----
-&nbsp;
-
-
-### DSCP IDs
-
-| #   | Name                       | Decimal | Binary  |
-| --- | ---                        | ---     | ---     |
-| 1   | Default                    | 0       | 00 0000 |
-| 2   | Expedited Forwarding (EF)  | 46      | 10 1110 |
-| 3   | Class Selector 1 (CS1)     | 8	     | 00 1000 |
-| 4   | Class Selector 2 (CS2)     | 16	     | 01 0000 |
-| 5   | Class Selector 3 (CS3)     | 24	     | 01 1000 |
-| 6   | Class Selector 4 (CS4)	   | 32	     | 10 0000 |
-| 7   | Class Selector 5 (CS5)     | 40      | 10 1000 |
-| 8   | Class Selector 6 (CS6)     | 48      | 11 0000 |
-| 9   | Class Selector 7 (CS7)     | 56	     | 11 1000 |
-
-<br>
-<br>
-
-| #   | Low Drop Probability   | Medium Drop Probability   | High Drop Probability  |
-| --- | ---                    | ---                       | ---                    |
-| 1   | AF11(10) 001 01_0      | AF12(12) 001 10_0         | AF13(14) 001 11_0      |
-| 2   | AF21(18) 010 01_0      | AF22(20) 010 10_0         | AF23(22) 010 11_0      |
-| 3   | AF31(26) 011 01_0      | AF32(28) 011 10_0         | AF33(30) 011 11_0      |
-| 4   | AF41(34) 100 01_0      | AF42(36) 100 10_0         | AF43(38) 100 11_0      |
-
-
-<br>
-<br>
-
-### SPAN
-~~~
-!@CoreBABA
-conf t
- monitor session 1 source interface fa0/3,fa0/5,fa0/7
- monitor session 1 destination interface fa0/1,fa0/9
- end
-~~~
-
-<br>
-
-Remove SPAN
-~~~
-conf t
- no monitor session 1
- end
-~~~
-
-
-<br>
-<br>
-
----
-&nbsp;
-
-
-### Modify QoS Marking
-| Protocol | DSCP |
-| ---      | ---  |
-| SKINNY   |      |
-| RTCP     |      |
-| RTP      |      |
-
-<br>
-
-__Remove Trust QOS__
-~~~
-!@CoreBABA
-conf t
- int range fa0/5,fa0/7
-  no mls qos trust device cisco-phone
-  end
-~~~
-
-
-<br>
-
-
-__Manual Markings__
-
-
-
-
-
-
 
 
 <br>
@@ -1755,8 +2088,8 @@ __Manual Markings__
 conf t
  no router ospf 1
  router ospf 1
-  router-id #$34T#.0.0.1
-  network 10.#$34T#.#$34T#.0 0.0.0.255 area 0
+  router-id 21.0.0.1
+  network 10.21.21.0 0.0.0.255 area 0
   default-information originate always
   exit
  ip domain lookup
@@ -1793,11 +2126,96 @@ conf t
 
 
 ### Multi-Point GRE Tunnel
+~~~
+!@EDGE
+conf t
+ int tun1
+  ip add 172.16.1.21 255.255.255.0
+  ! no ip redirects
+  tunnel source g0/0/1
+  tunnel mode gre multipoint
+  no shut
+  tun key 123
+  ip nhrp authentication C1sc0123
+  ip nhrp map multicast dynamic             !hubs
+! ip nhrp redirect                          !hubs
+! ip nhrp shortcut                          !spoke
+! ip nhrp nhs <hub tunnel ip>               !spoke
+! ip nhrp map multicast <hub pubip>         !spoke
+! ip nhrp map <hub tunnel ip>  <hub pubip>  !spoke
+  ip nhrp network-id 1337
+  ip nhrp map 172.16.1.11 200.0.0.11
+  ip nhrp map 172.16.1.12 200.0.0.12
+  ip nhrp map 172.16.1.21 200.0.0.21
+  ip nhrp map 172.16.1.22 200.0.0.22
+  ip nhrp map 172.16.1.31 200.0.0.31
+  ip nhrp map 172.16.1.32 200.0.0.32
+  ip nhrp map 172.16.1.41 200.0.0.41
+  ip nhrp map 172.16.1.42 200.0.0.42
+  ip nhrp map 172.16.1.51 200.0.0.51
+  ip nhrp map 172.16.1.52 200.0.0.52
+  ip nhrp map 172.16.1.61 200.0.0.61
+  ip nhrp map 172.16.1.62 200.0.0.62
+  ip nhrp map 172.16.1.71 200.0.0.71
+  ip nhrp map 172.16.1.72 200.0.0.72
+  ip nhrp map 172.16.1.81 200.0.0.81
+  ip nhrp map 172.16.1.82 200.0.0.82
+  ip nhrp map 172.16.1.91 200.0.0.91
+  ip nhrp map 172.16.1.92 200.0.0.92
+  no ip nhrp map 172.16.1.21 200.0.0.21
+  exit
+ !
+ ip route 10.11.0.0 255.255.0.0 172.16.1.11 252
+ ip route 10.12.0.0 255.255.0.0 172.16.1.12 252
+ ip route 10.21.0.0 255.255.0.0 172.16.1.21 252
+ ip route 10.22.0.0 255.255.0.0 172.16.1.22 252
+ ip route 10.31.0.0 255.255.0.0 172.16.1.31 252
+ ip route 10.32.0.0 255.255.0.0 172.16.1.32 252
+ ip route 10.41.0.0 255.255.0.0 172.16.1.41 252
+ ip route 10.42.0.0 255.255.0.0 172.16.1.42 252
+ ip route 10.51.0.0 255.255.0.0 172.16.1.51 252
+ ip route 10.52.0.0 255.255.0.0 172.16.1.52 252
+ ip route 10.61.0.0 255.255.0.0 172.16.1.61 252
+ ip route 10.62.0.0 255.255.0.0 172.16.1.62 252
+ ip route 10.71.0.0 255.255.0.0 172.16.1.71 252
+ ip route 10.72.0.0 255.255.0.0 172.16.1.72 252
+ ip route 10.81.0.0 255.255.0.0 172.16.1.81 252
+ ip route 10.82.0.0 255.255.0.0 172.16.1.82 252
+ ip route 10.91.0.0 255.255.0.0 172.16.1.91 252
+ ip route 10.92.0.0 255.255.0.0 172.16.1.92 252
+ !
+ no ip route 10.21.0.0 255.255.0.0 172.16.1.21 252
+~~~
 
+<br>
 
-
-
-
+__Modify NAT Policy__
+~~~
+conf t
+ no ip access-list extended NAT-POLICY
+ ip access-list extended NAT-POLICY
+  deny ip 10.21.0.0 0.0.255.255 10.11.0.0 0.0.255.255
+  deny ip 10.21.0.0 0.0.255.255 10.12.0.0 0.0.255.255
+  deny ip 10.21.0.0 0.0.255.255 10.21.0.0 0.0.255.255
+  deny ip 10.21.0.0 0.0.255.255 10.22.0.0 0.0.255.255
+  deny ip 10.21.0.0 0.0.255.255 10.31.0.0 0.0.255.255
+  deny ip 10.21.0.0 0.0.255.255 10.32.0.0 0.0.255.255
+  deny ip 10.21.0.0 0.0.255.255 10.41.0.0 0.0.255.255
+  deny ip 10.21.0.0 0.0.255.255 10.42.0.0 0.0.255.255
+  deny ip 10.21.0.0 0.0.255.255 10.51.0.0 0.0.255.255
+  deny ip 10.21.0.0 0.0.255.255 10.52.0.0 0.0.255.255
+  deny ip 10.21.0.0 0.0.255.255 10.61.0.0 0.0.255.255
+  deny ip 10.21.0.0 0.0.255.255 10.62.0.0 0.0.255.255
+  deny ip 10.21.0.0 0.0.255.255 10.71.0.0 0.0.255.255
+  deny ip 10.21.0.0 0.0.255.255 10.72.0.0 0.0.255.255
+  deny ip 10.21.0.0 0.0.255.255 10.81.0.0 0.0.255.255
+  deny ip 10.21.0.0 0.0.255.255 10.82.0.0 0.0.255.255
+  deny ip 10.21.0.0 0.0.255.255 10.91.0.0 0.0.255.255
+  deny ip 10.21.0.0 0.0.255.255 10.92.0.0 0.0.255.255
+  no deny ip 10.21.0.0 0.0.255.255 10.21.0.0 0.0.255.255
+  permit ip any any
+  end
+~~~
 
 
 <br>
@@ -1807,7 +2225,17 @@ conf t
 &nbsp;
 
 
-# S2S-VPN via Active Directory Certificate Services
+# Dynamic Multipoint VPN
+
+![DMVPN](img/DMVPN.png)
+
+
+&nbsp;
+---
+&nbsp;
+
+
+## Setup
 `VMWare` > `Edit` > `Virtual Network Editor`  
 
 <br>
@@ -1841,6 +2269,24 @@ Add/Edit the following VMNets:
 
 <br>
 
+| VMNet 5    |               |
+| ---        | ---           |
+| VMNet Info | Host-only     |
+| IP address | 192.168.105.0 |
+| Net Mask   | 255.255.255.0 |
+| DHCP       | Unchecked     | 
+
+<br>
+
+| VMNet 6    |               |
+| ---        | ---           |
+| VMNet Info | Host-only     |
+| IP address | 192.168.106.0 |
+| Net Mask   | 255.255.255.0 |
+| DHCP       | Unchecked     | 
+
+<br>
+
 | VMNet 8    |               |
 | ---        | ---           |
 | VMNet Info | NAT           |
@@ -1867,261 +2313,235 @@ Add/Edit the following VMNets:
 | DHCP       | Checked         | 
 
 
-<br>
-<br>
-
+&nbsp;
 ---
 &nbsp;
 
 
-## CERTIFICATE AUTHORITY
+## PRECONFIGS
+- Windows Server
+- VPNSec Lab
 
-### Deployment
 ~~~
-!@UTM-PH
+!@WinVM-cmd
+route add 172.16.29.0 mask 255.255.255.0 10.69.255.6
+~~~
+
+
+&nbsp;
+---
+&nbsp;
+
+
+### BGP
+
+| ISP | ASN   |
+| --- | ---   |
+| I1  | 1     |
+| I2  | 2     |
+| I3  | 3     |
+| Ex  | 12345 |
+
+
+~~~
+!@I1
 conf t
- hostname UTM-PH
- enable secret pass
- service password-encryption
- no logging cons
- ip domain lookup
- ip domain lookup source-interface G2
- ip name-server 192.168.102.8
- line vty 0 14
-  transport input all
-  password pass
-  login local
-  exec-timeout 0 0
- int g1
-  ip add 208.8.8.11 255.255.255.0
-  no shut
- int g2
-  ip add 192.168.102.11 255.255.255.0
-  no shut
- int g3
-  ip add 11.11.11.113 255.255.255.224
-  no shut
+ no router bgp 1
+ router bgp 1
+  bgp log-neighbor-changes
+  neighbor 12.1.2.2 remote-as 2
+  neighbor 13.1.3.3 remote-as 3
+  neighbor 1.10.1.10 remote-as 12345
+  neighbor 3.30.3.30 remote-as 12345
+  address-family ipv4
+   neighbor 12.1.2.2 activate
+   neighbor 13.1.3.3 activate
+   neighbor 1.10.1.10 activate
+   neighbor 3.30.3.30 activate
+   neighbor 1.10.1.10 as-override
+   neighbor 3.30.3.30 as-override
+   network 12.1.2.0 mask 255.255.255.0
+   network 13.1.3.0 mask 255.255.255.0
+   network 1.10.1.0 mask 255.255.255.0
+   network 3.30.3.0 mask 255.255.255.0
+   network 8.8.8.8 mask 255.255.255.255
+   end
+~~~
+
+<br>
+
+~~~
+!@I2
+conf t
+ no router bgp 2
+ router bgp 2
+  bgp log-neighbor-changes
+  neighbor 12.1.2.1 remote-as 1
+  neighbor 2.20.2.20 remote-as 12345
+  neighbor 5.50.5.50 remote-as 12345
+  address-family ipv4
+   neighbor 12.1.2.1 activate
+   neighbor 2.20.2.20 activate
+   neighbor 2.20.2.20 as-override
+   neighbor 5.50.5.50 activate
+   neighbor 5.50.5.50 as-override
+   network 12.1.2.0 mask 255.255.255.0
+   network 2.20.2.0 mask 255.255.255.0
+   network 5.50.5.0 mask 255.255.255.0
+   end   
+~~~
+
+<br>
+
+~~~
+!@I3
+conf t
+ no router bgp 3
+ router bgp 3
+  bgp log-neighbor-changes
+  neighbor 13.1.3.1 remote-as 1
+  neighbor 4.40.4.40 remote-as 12345
+  address-family ipv4
+   neighbor 13.1.3.1 activate
+   neighbor 4.40.4.40 activate
+   neighbor 4.40.4.40 as-override
+   network 13.1.3.0 mask 255.255.255.0 
+   network 4.40.4.0 mask 255.255.255.0
+   end
+~~~
+
+<br>
+
+~~~
+!@E1
+conf t
+ int lo0
+  ip add 1.1.1.1 255.255.255.255
+ no router bgp 12345
+ router bgp 12345
+  bgp log-neighbor-changes
+  neighbor 1.10.1.1 remote-as 1
+  address-family ipv4
+   neighbor 1.10.1.1 activate
+   network 1.10.1.0 mask 255.255.255.0
+   network 1.1.1.1 mask 255.255.255.255
  !
- username admin privilege 15 secret pass
- ip http server
- ip http secure-server
- ip http authentication local
- ip route 0.0.0.0 0.0.0.0 208.8.8.2
+ ip access-list extended NAT
+  permit ip 10.1.1.0 0.0.0.3 any
+ !
+ int e0/1
+  ip nat outside
+ int e0/0
+  ip nat inside
+ !
+ ip nat inside source list NAT int e0/1 overload
  end
-wr
-!
 ~~~
 
- 
 <br>
 
-
 ~~~
-!@UTM-JP
+!@E2
 conf t
- hostname UTM-JP
- enable secret pass
- service password-encryption
- no logging cons
- ip domain lookup
- ip domain lookup source-interface G2
- ip name-server 192.168.102.8
- line vty 0 14
-  transport input all
-  password pass
-  login local
-  exec-timeout 0 0
- int g1
-  ip add 208.8.8.12 255.255.255.0
-  no shut
- int g2
-  ip add 192.168.102.12 255.255.255.0
-  no shut
- int g3
-  ip add 21.21.21.213 255.255.255.240
-  no shut
+ no router bgp 12345
+ router bgp 12345
+  bgp log-neighbor-changes
+  neighbor 2.20.2.2 remote-as 2
+  address-family ipv4
+   neighbor 2.20.2.2 activate
+   network 2.20.2.0 mask 255.255.255.0
  !
- username admin privilege 15 secret pass
- ip http server
- ip http secure-server
- ip http authentication local
- ip route 0.0.0.0 0.0.0.0 208.8.8.2
+ ip access-list extended NAT
+  permit ip 10.2.2.0 0.0.0.3 any
+ !
+ int e0/1
+  ip nat outside
+ int e0/0
+  ip nat inside
+ !
+ ip nat inside source list NAT int e0/1 overload
  end
-wr
-!
 ~~~
-
-
-<br>
-
-
-~~~
-!@BLDG-PH
-sudo su
-ifconfig eth0 11.11.11.111 netmask 255.255.255.224 up
-route add default gw 11.11.11.113
-ping 11.11.11.113
-~~~
-
-
-<br>
-
-
-~~~
-!@BLDG-JP
-sudo su
-ifconfig eth0 21.21.21.211 netmask 255.255.255.240 up
-route add default gw 21.21.21.213
-ping 21.21.21.213
-~~~
-
-
-&nbsp;
----
-&nbsp;
-
-
-### STEP 1 - Setup WinServer
-
-| NetAdapter  | VMNet  | IP Address    | 
-| ---         | ---    | ---           |
-| 1           | NAT    | 208.8.8.8     |
-| 2           | VMNet2 | 192.168.102.8 |
 
 <br>
 
 ~~~
-!@Powershell
-set-netfirewallprofile -name private,public,domain -enabled false
-rename-computer ccnp#$34T#.com
-ncpa.cpl
-~~~
-
-
-&nbsp;
----
-&nbsp;
-
-
-### STEP 2 - Install Active Directory Domains and Services
-Create a Service Account:
-- Active Directory and Users and Computers
-
-
-&nbsp;
----
-&nbsp;
-
-
-### STEP 3 - Install Active Directory Certificate Services
-
-
-&nbsp;
----
-&nbsp;
-
-
-### STEP 4 - Create DNS Mapping for both Device
-
-
-&nbsp;
----
-&nbsp;
-
-
-### STEP 5 - Configure Certificates on Cisco UTM-PH & UTM-JP
-
-~~~
-!@UTM-PH
+!@E3
 conf t
- crypto key generate rsa modulus 2048 label CERTKEY
+ no router bgp 12345
+ router bgp 12345
+  bgp log-neighbor-changes
+  neighbor 3.30.3.1 remote-as 1
+  address-family ipv4
+   neighbor 3.30.3.1 activate
+   network 3.30.3.0 mask 255.255.255.0
  !
- crypto pki trustpoint CCNPTRUST
-  enrollment url http://192.168.102.8/certsrv/mscep/mscep.dll
-  serial-number
-  fqdn utmph.ccnp#$34T#.com
-  ip-address 208.8.8.11
-  subject-name CN=UTM-PH,OU=NOC,O=RIVANCORP,L=MAKATI,ST=NCR,C=PH
-  subject-alt-name utmph.ccnp#$34T#.com
-  revocation-check none
-  source interface GigabitEthernet2
-  rsakeypair CERTKEY
-  end
-~~~
-
-<br>
-
-~~~
-!@UTM-JP
-conf t
- crypto key generate rsa modulus 2048 label CERTKEY
+ ip access-list extended NAT
+  permit ip 192.168.3.0 0.0.0.255 any
  !
- crypto pki trustpoint CCNPTRUST
-  enrollment url http://192.168.102.8/certsrv/mscep/mscep.dll
-  serial-number
-  fqdn utmjp.ccnp#$34T#.com
-  ip-address 208.8.8.12
-  subject-name CN=UTM-JP,OU=NOC,O=RIVANCORP,L=TOKYO,ST=KANTO,C=JP
-  subject-alt-name utmjp.ccnp#$34T#.com
-  revocation-check none
-  source interface GigabitEthernet2
-  rsakeypair CERTKEY
-  end
+ int e0/1
+  ip nat outside
+ int e0/0
+  ip nat inside
+ !
+ ip nat inside source list NAT int e0/1 overload
+ end
 ~~~
 
-
-
-&nbsp;
----
-&nbsp;
-
-
-### STEP 6 - Access CA Web Enrollment
-
-Set Routes for trustpoints:
-~~~
-!@cmd
-route add 208.8.8.11 mask 255.255.255.255 192.168.102.11
-route add 208.8.8.12 mask 255.255.255.255 192.168.102.12
-~~~
-
-
 <br>
-<br>
-
-
-http://192.168.102.8/certsrv/mscep/mscep.dll  
-
-<br>
-<br>
-
-Grab the Hash & Challenge Password    
-- Hash: ___________    
-- Pass: ___________  
-
-
-&nbsp;
----
-&nbsp;
-
-
-### STEP 7 - Enroll Network Devices
 
 ~~~
-!@UTM-PH,UTM-JP
+!@E4
 conf t
- crypto pki enroll CCNPTRUST
+ no router bgp 12345
+ router bgp 12345
+  bgp log-neighbor-changes
+  neighbor 4.40.4.3 remote-as 3
+  address-family ipv4
+   neighbor 4.40.4.3 activate
+   network 4.40.4.0 mask 255.255.255.0
+ !
+ ip access-list extended NAT
+  permit ip 192.168.4.0 0.0.0.255 any
+ !
+ int e0/1
+  ip nat outside
+ int e0/0
+  ip nat inside
+ !
+ ip nat inside source list NAT int e0/1 overload
+ end
+~~~
+
+<br>
+
+~~~
+!@E5
+conf t
+ no router bgp 12345
+ router bgp 12345
+  bgp log-neighbor-changes
+  neighbor 5.50.5.2 remote-as 2
+  address-family ipv4
+   neighbor 5.50.5.2 activate
+   network 5.50.5.0 mask 255.255.255.0
+ !
+ ip access-list extended NAT
+  permit ip 192.168.5.0 0.0.0.255 any
+ !
+ int e0/1
+  ip nat outside
+ int e0/0
+  ip nat inside
+ !
+ ip nat inside source list NAT int e0/1 overload
+ end
 ~~~
 
 
-<br>
-<br>
-
+&nbsp;
 ---
 &nbsp;
-
-
-## S2S-VPN
 
 __Phase 1 (IKEv2) & Phase 2 (IPSec)__
 - Encryption
@@ -2142,388 +2562,1012 @@ __Tunnel Properties__
 &nbsp;
 
 
-### STEP 1 - Phase 1 (IKEv2)
+### PHASE 1 - IKEv2
+
+1. PHASE 1 PROPOSAL
+2. PHASE 1 POLICY
+3. PHASE 1 KEYRING
+4. PHASE 1 PROFILE
+
+__HUB__
 ~~~
-!@UTM-PH
+!@E1,E2
 conf t
- crypto ikev2 proposal IKEV2-PROP
-  encryption ______
-  integrity ______
-  group ______
+ crypto ikev2 proposal PROP1
+  encr aes-cbc-256
+  integrity sha256
+  group 14
+ crypto ikev2 proposal PROP2
+  encr aes-gcm-256
+  prf sha256
+  group 14
  !
- crypto ikev2 policy IKEV2-POL
-  proposal IKEV2-PROP
+ crypto ikev2 policy IKEV2-POL1
+  proposal PROP1
+  proposal PROP2
  !
- crypto ikev2 profile IKEV2-PROF
-  match identity remote address __.__.__.__
+ crypto ikev2 keyring KEY1
+  peer DMVPN-EDGES
+   address 0.0.0.0  0.0.0.0
+   pre-shared-key C1sc0123
+ !
+ crypto ikev2 profile IKEV2-PROF1
+  match identity remote address 0.0.0.0  0.0.0.0
+  authentication remote pre-share
+  authentication local pre-share
+  keyring local KEY1
+  lifetime 86400
+  end
+~~~
+
+<br>
+
+__SPOKES__
+~~~
+!@E3,E4,E5
+conf t
+ crypto ikev2 proposal PROP1
+  encr aes-cbc-256
+  integrity sha256
+  group 14
+ crypto ikev2 proposal PROP2
+  encr aes-gcm-256
+  prf sha256
+  group 14
+ !
+ crypto ikev2 policy IKEV2-POL1
+  proposal PROP1
+  proposal PROP2
+ !
+ crypto ikev2 keyring KEY1
+  peer HUB1
+   address 1.10.1.10 255.255.255.255
+   pre-shared-key C1sc0123
+  peer HUB2
+   address 2.20.2.20 255.255.255.255
+   pre-shared-key C1sc0123
+ !
+ crypto ikev2 profile IKEV2-PROF1
+  match identity remote address 1.10.1.10
+  match identity remote address 2.20.2.20
+  authentication remote pre-share
+  authentication local pre-share
+  keyring local KEY1
+  lifetime 86400
+  end
+~~~
+
+
+&nbsp;
+---
+&nbsp;
+
+
+### PHASE 2 - IPSec
+
+1. PHASE 2 TRANSFORM SET
+2. PHASE 2 PROFILE
+
+~~~
+!@E1,E2,E3,E4,E5
+conf t
+ crypto ipsec transform-set TS1 esp-aes 256 esp-sha256-hmac
+  mode tunnel
+ crypto ipsec transform-set TS2 esp-gcm 256
+  mode tunnel
+ !
+ crypto ipsec profile IPSEC-PROF1
+  set transform-set TS1 TS2
+  set ikev2-profile IKEV2-PROF1
+  set pfs group14
+  end
+~~~
+
+<br>
+
+~~~
+!@E1
+conf t
+ int tunnel0
+  ip add 172.16.1.254 255.255.255.0
+  tunnel mode gre multipoint
+  tunnel source e0/1
+  tunnel protection ipsec profile IPSEC-PROF1
+  ip nhrp network-id 12345
+  ip nhrp authentication C1sc0123
+  ip nhrp map multicast dynamic
+  ip nhrp redirect
+ !
+ no ip access-list extended NAT
+ ip access-list extended NAT
+  deny ip host 10.1.1.1 host 10.2.2.1
+  deny ip host 10.1.1.1 192.168.3.0 0.0.0.255
+  deny ip host 10.1.1.1 192.168.4.0 0.0.0.255
+  deny ip host 10.1.1.1 192.168.5.0 0.0.0.255
+  permit ip 10.1.1.0 0.0.0.3 any
+  end
+~~~
+
+<br>
+
+~~~
+!@E2
+conf t
+ int tunnel0
+  ip add 172.16.1.253 255.255.255.0
+  tunnel mode gre multipoint
+  tunnel source e0/1
+  tunnel protection ipsec profile IPSEC-PROF1
+  ip nhrp network-id 12345
+  ip nhrp authentication C1sc0123
+  ip nhrp map multicast dynamic
+  ip nhrp redirect
+ !
+ no ip access-list extended NAT
+ ip access-list extended NAT
+  deny ip host 10.2.2.1 host 10.1.1.1
+  deny ip host 10.2.2.1 192.168.3.0 0.0.0.255
+  deny ip host 10.2.2.1 192.168.4.0 0.0.0.255
+  deny ip host 10.2.2.1 192.168.5.0 0.0.0.255
+  permit ip 10.2.2.0 0.0.0.3 any
+  end
+~~~
+
+<br>
+
+~~~
+!@E3
+conf t
+ int tunnel0
+  ip add 172.16.1.3 255.255.255.0
+  tunnel mode gre multipoint
+  tunnel source e0/1
+  tunnel protection ipsec profile IPSEC-PROF1
+  ip nhrp network-id 12345
+  ip nhrp authentication C1sc0123
+  ip nhrp map 172.16.1.254  1.10.1.10
+  ip nhrp map 172.16.1.253  2.20.2.20
+  ip nhrp map multicast 1.10.1.10
+  ip nhrp map multicast 2.20.2.20
+  ip nhrp nhs 172.16.1.254
+  ip nhrp nhs 172.16.1.253
+  ip nhrp shortcut
+!
+ no ip access-list extended NAT
+ ip access-list extended NAT
+  deny ip host 192.168.3.101 host 10.1.1.1
+  deny ip host 192.168.3.101 host 10.2.2.1
+  deny ip host 192.168.3.101 192.168.4.0 0.0.0.255
+  deny ip host 192.168.3.101 192.168.5.0 0.0.0.255
+  permit ip 192.168.3.0 0.0.0.255 any
+  end
+~~~
+
+<br>
+
+~~~
+!@E4
+conf t
+ int tunnel0
+  ip add 172.16.1.4 255.255.255.0
+  tunnel mode gre multipoint
+  tunnel source e0/1
+  tunnel protection ipsec profile IPSEC-PROF1
+  ip nhrp network-id 12345
+  ip nhrp authentication C1sc0123
+  ip nhrp map 172.16.1.254  1.10.1.10
+  ip nhrp map 172.16.1.253  2.20.2.20
+  ip nhrp map multicast 1.10.1.10
+  ip nhrp map multicast 2.20.2.20
+  ip nhrp nhs 172.16.1.254
+  ip nhrp nhs 172.16.1.253
+  ip nhrp shortcut
+ !
+ no ip access-list extended NAT
+ ip access-list extended NAT
+  deny ip host 192.168.4.101 host 10.1.1.1
+  deny ip host 192.168.4.101 host 10.2.2.1
+  deny ip host 192.168.4.101 192.168.3.0 0.0.0.255
+  deny ip host 192.168.4.101 192.168.5.0 0.0.0.255
+  permit ip 192.168.4.0 0.0.0.255 any
+  end
+~~~
+
+<br>
+
+~~~
+!@E5
+conf t
+ int tunnel0
+  ip add 172.16.1.5 255.255.255.0
+  tunnel mode gre multipoint
+  tunnel source e0/1
+  tunnel protection ipsec profile IPSEC-PROF1
+  ip nhrp network-id 12345
+  ip nhrp authentication C1sc0123
+  ip nhrp map 172.16.1.254  1.10.1.10
+  ip nhrp map 172.16.1.253  2.20.2.20
+  ip nhrp map multicast 1.10.1.10
+  ip nhrp map multicast 2.20.2.20
+  ip nhrp nhs 172.16.1.254
+  ip nhrp nhs 172.16.1.253
+  ip nhrp shortcut
+ !
+ no ip access-list extended NAT
+ ip access-list extended NAT
+  deny ip host 192.168.5.101 host 10.1.1.1
+  deny ip host 192.168.5.101 host 10.2.2.1
+  deny ip host 192.168.5.101 192.168.3.0 0.0.0.255
+  deny ip host 192.168.5.101 192.168.4.0 0.0.0.255
+  permit ip 192.168.5.0 0.0.0.255 any
+  end
+~~~
+
+
+&nbsp;
+---
+&nbsp;
+
+
+### Routing : EIGRP
+
+~~~
+!@E1
+conf t
+ router eigrp 100
+  network 10.1.1.0 0.0.0.3
+  network 172.16.1.0 0.0.0.255
+  end
+~~~
+
+<br>
+
+~~~
+!@S1
+conf t
+ ip route 0.0.0.0 0.0.0.0 10.1.1.2
+ end
+~~~
+
+<br>
+
+~~~
+!@E2
+conf t
+ router eigrp 100
+  network 10.2.2.0 0.0.0.3
+  network 172.16.1.0 0.0.0.255
+  end
+~~~
+
+<br>
+
+~~~
+!@S2
+conf t
+ ip route 0.0.0.0 0.0.0.0 10.2.2.2
+ end
+~~~
+
+<br>
+
+~~~
+!@E3
+conf t
+ router eigrp 100
+  network 192.168.3.0 0.0.0.255
+  network 172.16.1.0 0.0.0.255
+  end
+~~~
+
+<br>
+
+~~~
+!@P1
+conf t
+ ip route 0.0.0.0 0.0.0.0 192.168.3.3
+ end
+~~~
+
+<br>
+
+~~~
+!@E4
+conf t
+ router eigrp 100
+  network 192.168.4.0 0.0.0.255
+  network 172.16.1.0 0.0.0.255
+  end
+~~~
+
+<br>
+
+~~~
+!@P2
+conf t
+ ip route 0.0.0.0 0.0.0.0 192.168.4.4
+ end
+~~~
+
+<br>
+
+~~~
+!@E5
+conf t
+ router eigrp 100
+  network 192.168.5.0 0.0.0.255
+  network 172.16.1.0 0.0.0.255
+  end
+~~~
+
+<br>
+
+~~~
+!@P3
+conf t
+ ip route 0.0.0.0 0.0.0.0 192.168.5.5
+ end
+~~~
+
+
+<br>
+<br>
+
+
+__SPLIT-HORIZON & NEXT-HOP-SELF__
+~~~
+!@E1,E2
+conf t
+ int tunnel0
+  no ip split-horizon eigrp 100
+  no ip next-hop-self eigrp 100
+  end
+~~~
+
+
+&nbsp;
+---
+&nbsp;
+
+
+### Routing: OSPF
+
+~~~
+!@E1
+conf t
+ router ospf 1
+  network 10.1.1.0 0.0.0.3 area 0
+  network 172.16.1.0 0.0.0.255 area 0
+ !
+ int tunnel0
+  ip ospf network point-to-multipoint
+  end
+~~~
+
+<br>
+
+~~~
+!@S1
+conf t
+ ip route 0.0.0.0 0.0.0.0 10.1.1.2
+ end
+~~~
+
+<br>
+
+~~~
+!@E2
+conf t
+ router ospf 1 
+  network 10.2.2.0 0.0.0.3 area 0
+  network 172.16.1.0 0.0.0.255 area 0
+ !
+ int tunnel0
+  ip ospf network point-to-multipoint
+  end
+~~~
+
+<br>
+
+~~~
+!@S2
+conf t
+ ip route 0.0.0.0 0.0.0.0 10.2.2.2
+ end
+~~~
+
+<br>
+
+~~~
+!@E3
+conf t
+ router ospf 1
+  network 192.168.3.0 0.0.0.255 area 0
+  network 172.16.1.0 0.0.0.255 area 0
+ int tunnel0
+  ip ospf network point-to-multipoint
+  end
+~~~
+
+<br>
+
+~~~
+!@P1
+conf t
+ ip route 0.0.0.0 0.0.0.0 192.168.3.3
+ end
+~~~
+
+<br>
+
+~~~
+!@E4
+conf t
+ router ospf 1
+  network 192.168.4.0 0.0.0.255 area 0
+  network 172.16.1.0 0.0.0.255 area 0
+ int tunnel0
+  ip ospf network point-to-multipoint
+  end
+~~~
+
+<br>
+
+~~~
+!@P2
+conf t
+ ip route 0.0.0.0 0.0.0.0 192.168.4.4
+ end
+~~~
+
+<br>
+
+~~~
+!@E5
+conf t
+ router ospf 1
+  network 192.168.5.0 0.0.0.255 area 0
+  network 172.16.1.0 0.0.0.255 area 0
+ int tunnel0
+  ip ospf network point-to-multipoint
+  end
+~~~
+
+<br>
+
+~~~
+!@P3
+conf t
+ ip route 0.0.0.0 0.0.0.0 192.168.5.5
+ end
+~~~
+
+
+<br>
+<br>
+
+---
+&nbsp;
+
+
+### Exercise: Verify and TShoot the DMVPN Configurations
+~~~
+!@P1
+traceroute 192.168.5.103
+~~~
+
+<br>
+
+~~~
+!@E3,E4,E5
+conf t
+ crypto ikev2 keyring KEY1
+  peer E3
+   address 3.30.3.30 255.255.255.255
+   pre-shared-key C1sc0123
+  peer E4
+   address 4.40.4.40 255.255.255.255
+   pre-shared-key C1sc0123
+  peer E5
+   address 5.50.5.50 255.255.255.255
+   pre-shared-key C1sc0123
+ !
+ crypto ikev2 profile IKEV2-PROF1
+  match identity remote address 1.10.1.10
+  match identity remote address 2.20.2.20
+  match identity remote address 3.30.3.30
+  match identity remote address 4.40.4.40
+  match identity remote address 5.50.5.50
+  authentication remote pre-share
+  authentication local pre-share
+  keyring local KEY1
+  end
+~~~
+
+
+<br>
+<br>
+
+---
+&nbsp;
+
+
+### Tunnel Settings
+
+1. MTU Adjustment
+- MTU defines the absolute largest packet size an interface can forward. If a packet exceeds this size, the router must either fragment it or drop it (if the Don't Fragment bit is set).
+
+*Lower the MTU on the tunnel interface to account for the ~50-70 bytes of IPsec overhead.*
+
+<br>
+
+2. TCP MSS Clamping
+- TCP MSS (Maximum Segment Size) clamping is a proactive fix. When a user establishes a TCP connection (like HTTPS or SSH), the router intercepts the handshake and artificially lowers the requested packet size.
+
+*The router edits the TCP SYN packet. It tells both computers, "Do not send packets larger than X bytes because this path has a VPN."*
+
+~~~
+!@E1,E2,E3,E4,E5
+conf t
+ int tun0
+  ip mtu 1400
+  ip tcp adjust-mss 1360
+  bandwidth 100000
+  delay 1000
+  end
+~~~
+
+
+&nbsp;
+---
+&nbsp;
+
+
+3. IPSec VPN Prefragmentation
+- Pre-fragmentation for IPsec VPNs operates in IPsec tunnel mode and IPsec tunnel mode with GRE, but not with IPsec transport mode.   
+
+*Pre-fragmentation is a reactive fix for packets that are already too big for the VPN tunnel, especially non-TCP traffic that MSS clamping cannot touch.*  
+
+When a large UDP packet arrives, the router splits it into smaller cleartext pieces before wrapping them in IPsec. The receiving router can decrypt each piece immediately in hardware without waiting to reassemble them.  
+ 
+~~~
+!@E1,E2,E3,E4,E5
+conf t
+ crypto ipsec transform-set TS1 esp-aes 256 esp-sha256-hmac
+  mode tunnel
+ crypto ipsec transform-set TS2 esp-gcm 256
+  mode tunnel
+ crypto ipsec fragmentation before-encryption
+ end
+~~~
+
+
+<br>
+<br>
+
+---
+&nbsp;
+
+
+# DMVPN : Certificate Auth
+
+### STEP 1 - Setup WinServer
+
+| NetAdapter  | VMNet   | IP Address        | 
+| ---         | ---     | ---               |
+| 1           | NAT     | 208.8.8.8     /24 |
+| 2           | VMNet2  | 192.168.102.8 /24 |
+| 3           | VMNet16 | 10.69.255.4   /29 |
+
+<br>
+
+~~~
+!@Powershell
+set-netfirewallprofile -name private,public,domain -enabled false
+rename-computer ccnp21
+ncpa.cpl
+~~~
+
+<br>
+
+~~~
+!@WinVM-cmd
+route add 172.16.29.0 mask 255.255.255.0 10.69.255.6 -p
+~~~
+
+
+&nbsp;
+---
+&nbsp;
+
+
+### STEP 2 - Install Active Directory Domains and Services
+Create a Service Account:
+- Active Directory and Users and Computers
+
+| New User    |              |
+| ---         | ---          |
+| User Name   | ca           |
+| Full Name   | CERTAUTH     |
+| Password    | C1sc0123     |
+| Pass Policy | Never Expire |
+| Member of   | IIS_IUSRS    |
+
+
+&nbsp;
+---
+&nbsp;
+
+
+### STEP 3 - Install Active Directory Certificate Services
+
+Afterwards, install ADCS Add-Ons:
+- Certificate Enrollment Policy Web Service  
+- Certificate Enrollment Web Service         
+- Certificate Authority Web Enrollment
+- Network Device Enrollment Service
+
+
+&nbsp;
+---
+&nbsp;
+
+
+### STEP 4 - Configure Certificates on Cisco (.3 ako sa lab, .4 original)
+__TRUSTPOINTS__
+~~~
+!@E1
+conf t
+ crypto key generate rsa modulus 2048 label CERTKEY
+ !
+ crypto pki trustpoint CCNPTRUST
+  enrollment url http://10.69.255.3/certsrv/mscep/mscep.dll
+  serial-number
+  fqdn e1.ccnp21.com
+  ip-address 1.10.1.10
+  subject-name CN=E1,OU=HQ,O=RIVANCORP,L=MANILA,ST=NCR,C=PH
+  subject-alt-name e1.ccnp21.com
+  revocation-check none
+  source interface e3/0
+  rsakeypair CERTKEY
+  vrf MANAGEMENT
+  exit
+ !
+ crypto pki authenticate CCNPTRUST !after nito, yes then #crypto pki enroll CCNPTRUST  , then verify HQ-Edge-1#show crypto pki trustpoints status
+~~~
+
+<br>
+
+~~~
+!@E2
+conf t
+ crypto key generate rsa modulus 2048 label CERTKEY
+ !
+ crypto pki trustpoint CCNPTRUST
+  enrollment url http://10.69.255.3/certsrv/mscep/mscep.dll
+  serial-number
+  fqdn e2.ccnp21.com
+  ip-address 2.20.2.20
+  subject-name CN=E2,OU=HQ,O=RIVANCORP,L=MARIKINA,ST=NCR,C=PH
+  subject-alt-name e2.ccnp21.com
+  revocation-check none
+  source interface e3/0
+  rsakeypair CERTKEY
+  vrf MANAGEMENT
+  exit
+ !
+ crypto pki authenticate CCNPTRUST
+~~~
+
+<br>
+
+~~~
+!@E3
+conf t
+ crypto key generate rsa modulus 2048 label CERTKEY
+ !
+ crypto pki trustpoint CCNPTRUST
+  enrollment url http://10.69.255.3/certsrv/mscep/mscep.dll
+  serial-number
+  fqdn e3.ccnp21.com
+  ip-address 3.30.3.30
+  subject-name CN=E3,OU=BRANCH3,O=RIVANCORP,L=MAKATI,ST=NCR,C=PH
+  subject-alt-name e3.ccnp21.com
+  revocation-check none
+  source interface e3/0
+  rsakeypair CERTKEY
+  vrf MANAGEMENT
+  exit
+ !
+ crypto pki authenticate CCNPTRUST
+~~~
+
+<br>
+
+~~~
+!@E4
+conf t
+ crypto key generate rsa modulus 2048 label CERTKEY
+ !
+ crypto pki trustpoint CCNPTRUST
+  enrollment url http://10.69.255.3/certsrv/mscep/mscep.dll
+  serial-number
+  fqdn e4.ccnp21.com
+  ip-address 4.40.4.40
+  subject-name CN=E4,OU=BRANCH4,O=RIVANCORP,L=TOKYO,ST=KANTO,C=JP
+  subject-alt-name e4.ccnp21.com
+  revocation-check none
+  source interface e3/0
+  rsakeypair CERTKEY
+  vrf MANAGEMENT
+  exit
+ !
+ crypto pki authenticate CCNPTRUST
+~~~
+
+<br>
+
+~~~
+!@E5
+conf t
+ crypto key generate rsa modulus 2048 label CERTKEY
+ !
+ crypto pki trustpoint CCNPTRUST
+  enrollment url http://10.69.255.3/certsrv/mscep/mscep.dll
+  serial-number
+  fqdn e5.ccnp21.com
+  ip-address 5.50.5.50
+  subject-name CN=E5,OU=BRANCH5,O=RIVANCORP,L=WS,ST=WASHINGTON,C=US
+  subject-alt-name e5.ccnp21.com
+  revocation-check none
+  source interface e3/0
+  rsakeypair CERTKEY
+  vrf MANAGEMENT
+  exit
+ !
+ crypto pki authenticate CCNPTRUST
+~~~
+
+
+&nbsp;
+---
+&nbsp;
+
+
+### STEP 6 - Access CA Web Enrollment
+
+http://10.69.255.4/certsrv/mscep/mscep.dll  
+
+
+<br>
+<br>
+
+Grab the Hash & Challenge Password    
+- Hash: ___________    
+- Pass: ___________  
+
+
+&nbsp;
+---
+&nbsp;
+
+
+### STEP 7 - Enroll Network Devices
+
+~~~
+!@E1,E2,E3,E4,E5
+conf t
+ crypto pki enroll CCNPTRUST
+
+~~~
+
+
+<br>
+<br>
+
+---
+&nbsp;
+
+
+### VERIFICATION - Modify DMVPN Tunnel to use RSA-SIGNATURE
+~~~
+!@E1,E2,E3,E4,E5
+conf t
+ crypto ikev2 profile IKEV2-PROF1
+  no authentication remote pre-share
   authentication remote rsa-sig
   authentication local rsa-sig
   pki trustpoint CCNPTRUST
+  no keyring local KEY1
   end
 ~~~
 
 <br>
 
+__Verify__
 ~~~
-!@UTM-JP
-conf t
- crypto ikev2 proposal IKEV2-PROP
-  encryption ______
-  integrity ______
-  group ______
- !
- crypto ikev2 policy IKEV2-POL
-  proposal IKEV2-PROP
- !
- crypto ikev2 profile IKEV2-PROF
-  match identity remote address __.__.__.__
-  authentication remote rsa-sig
-  authentication local rsa-sig
-  pki trustpoint CCNPTRUST
-  end
+!@E1,E2,E3,E4,E5
+clear crypto ikev2 sa fast 
+sh crypto ikev2 sa
 ~~~
 
 
-&nbsp;
+<br>
+<br>
+
 ---
 &nbsp;
 
 
-### STEP 2 - Phase 2 (IPSEC)
+# AAA Radius
+
 ~~~
-!@UTM-PH, UTM-JP
+!@All Devices
 conf t
- crypto ipsec transform-set TSET _____  _____
-  mode ____
- !
- crypto ipsec profile VPN-IPSEC-PROF
-  set transform-set TSET
-  set ikev2-profile IKEV2-PROF
+ int e3/0
+  no shut
   end
+ping vrf MANAGEMENT 10.69.255.4
 ~~~
 
-
-&nbsp;
----
-&nbsp;
-
-
-### STEP 3 - Tunnel Properties
-
-~~~
-!@UTM-PH
-conf t
- int tun1
-  ip add __.__.__.__  __.__.__.__
-  tunnel source ___
-  tunnel destination __.__.__.__
-  tunnel mode ipsec ipv4
-  tunnel protection ipsec profile VPN-IPSEC-PROF
-  end
-~~~
 
 <br>
 
+
 ~~~
-!@UTM-JP
+!@RST Devices
 conf t
- int tun1
-  ip add __.__.__.__  __.__.__.__
-  tunnel source ___
-  tunnel destination __.__.__.__
-  tunnel mode ipsec ipv4
-  tunnel protection ipsec profile VPN-IPSEC-PROF
+ aaa new-model
+ radius server WINRAD
+  address ipv4 10.69.255.4 auth-port 1812 acct-port 1813
+  key C1sc0123
+ !
+ aaa group server radius RADGROUP
+  server name WINRAD
+  ip vrf forwarding MANAGEMENT
+ ip radius source-int e3/0
+ !
+ aaa authentication login default group RADGROUP local
+ aaa authorization exec default group RADGROUP local
+ !
+ line vty 0 4
+  login authentication default
   end
 ~~~
 
 
-&nbsp;
+<br>
+<br>
+
 ---
 &nbsp;
 
 
-### STEP 4 - Remote Subnets / Interesting Traffic
+# LISP
+
+- EID : Endpoint Identifier
+- Map Resolver/Server
+- Route Locator
+- ITR : Points IP address for Map Resolver   ! ITR + ETR = XTR
+- ETR : Register EID to Map Server
+
+| EID            | RLOC      | 
+| ---            | ---       |
+| 192.168.3.0/24 | 3.30.3.30 |
+| 192.168.4.0/24 | 4.40.4.40 |
+| 192.168.5.0/24 | 5.50.5.50 |
+
+
+
 ~~~
-!@UTM-PH
+!@E1,E2,E3,E4,E5
 conf t
- ip route __.__.__.__  __.__.__.__  __.__.__.__
+ no int tunnel0
  end
 ~~~
 
 <br>
 
+__Map Resolver /Map Server__
 ~~~
-!@UTM-JP
+!@E1-MS/MR
 conf t
- ip route __.__.__.__  __.__.__.__  __.__.__.__
+ router lisp
+  ipv4 map-server
+  ipv4 map-resolver
+ !
+  site E2
+   eid-prefix 10.2.2.0/30
+   authentication-key C1sc0123
+ !
+  site E3
+   eid-prefix 192.168.3.0/24
+   authentication-key C1sc0123
+ !
+  site E4
+   eid-prefix 192.168.4.0/24
+   authentication-key C1sc0123
+ !
+  site E5
+   eid-prefix 192.168.5.0/24
+   authentication-key C1sc0123
+ !
  end
+show lisp site summary
+show ip lisp 
 ~~~
-
-
-
-
 
 <br>
-<br>
-
----
-&nbsp;
-
-
-
-
-
-
-
-
-## DMVPN
-
-### PRECONFIGS
 
 ~~~
-!@UTM-PH
+!@E2-XTR
 conf t
- hostname UTM-PH
- enable secret pass
- service password-encryption
- no logging cons
- ip domain lookup
- ip domain lookup source-interface G2
- ip name-server 192.168.102.8
- line vty 0 14
-  transport input all
-  password pass
-  login local
-  exec-timeout 0 0
- int g1
-  ip add 208.8.8.11 255.255.255.0
-  no shut
- int g2
-  ip add 192.168.102.11 255.255.255.0
-  no shut
- int g3
-  ip add 10.11.11.113 255.255.255.224
-  no shut
- !
- username admin privilege 15 secret pass
- ip http server
- ip http secure-server
- ip http authentication local
- ip route 0.0.0.0 0.0.0.0 208.8.8.2
- end
-wr
-!
-~~~
-
-~~~
-!@UTM-JP
-conf t
- hostname UTM-JP
- enable secret pass
- service password-encryption
- no logging cons
- ip domain lookup
- ip domain lookup source-interface G2
- ip name-server 192.168.102.8
- line vty 0 14
-  transport input all
-  password pass
-  login local
-  exec-timeout 0 0
- int g1
-  ip add 208.8.8.12 255.255.255.0
-  no shut
- int g2
-  ip add 192.168.102.12 255.255.255.0
-  no shut
- int g3
-  ip add 10.21.21.213 255.255.255.240
-  no shut
- !
- username admin privilege 15 secret pass
- ip http server
- ip http secure-server
- ip http authentication local
- ip route 0.0.0.0 0.0.0.0 208.8.8.2
- end
-wr
-!
-~~~
-
-~~~
-!@UTM-US
-conf t
- hostname UTM-US
- enable secret pass
- service password-encryption
- no logging cons
- ip domain lookup
- ip domain lookup source-interface G2
- ip name-server 192.168.102.8
- line vty 0 14
-  transport input all
-  password pass
-  login local
-  exec-timeout 0 0
- int g1
-  ip add 208.8.8.13 255.255.255.0
-  no shut
- int g2
-  ip add 192.168.102.13 255.255.255.0
-  no shut
- int g3
-  ip add 10.0.0.2 255.255.255.252
-  no shut
- !
- username admin privilege 15 secret pass
- ip http server
- ip http secure-server
- ip http authentication local
- ip route 0.0.0.0 0.0.0.0 208.8.8.2
- end
-wr
-!
-~~~
-
-~~~
-!@BLDG-PH
-sudo su
-ifconfig eth0 10.11.11.101 netmask 255.255.255.224 up
-route add default gw 10.11.11.113
-ping 10.11.11.113
-~~~
-
-~~~
-!@BLDG-JP
-sudo su
-ifconfig eth0 10.21.21.211 netmask 255.255.255.240 up
-route add default gw 10.21.21.213
-ping 10.21.21.213
-~~~
-
-~~~
-!@BLDG-US
-sudo su
-ifconfig eth0 10.0.0.1 netmask 255.255.255.252 up
-route add default gw 10.0.0.2
-ping 10.0.0.2
-~~~
-
-
-<br>
-<br>
-
----
-&nbsp;
-
-
-### STEP 1 - IKEV2
-HUB
-~~~
-!@UTM-US
-conf t
- crypto ikev2 proposal IKEV2-PROP
-  encryption ___
-  integrity ___
-  group ___
- !
- crypto ikev2 policy IKEV2-POLICY
-  proposal ___
- !
- crypto ikev2 keyring DMVPN-KEYRING
-  peer SPOKES
-   address ___.___.___.___
-   pre-shared-key ___
- !
- crypto ikev2 profile DMVPN-IKEV2
-  ___
-  ___
-  ___
-  ___
-  end
-~~~
-
-SPOKE
-~~~
-!@UTM-PH,UTM-JP
-conf t
- crypto ikev2 proposal IKEV2-PROP
-  encryption ___
-  integrity ___
-  group ___
- !
- crypto ikev2 policy IKEV2-POLICY
-  proposal ___
- !
- crypto ikev2 keyring DMVPN-KEYRING
-  peer SPOKES
-   address ___.___.___.___
-   pre-shared-key ___
- !
- crypto ikev2 profile DMVPN-IKEV2
-  ___
-  ___
-  ___
-  ___
-  end
-~~~
-
-
-<br>
-<br>
-
----
-&nbsp;
-
-
-### STEP 2 - IPSEC
-
-HUB
-~~~
-!@UTM-US
-conf t
- crypto ipsec transform-set TS ___
-  mode ___
+ router lisp
+  ipv4 itr
+  ipv4 etr
+  ipv4 itr map-resolver 1.10.1.10
+  ipv4 etr map-server 1.10.1.10 key C1sc0123
+  locator-set RLOCS
+   ipv4-interface e0/1 priority 100 weight 100
   !
- crypto ipsec profile DMVPN-IPSEC
-  ___
-  ___
- !
- interface Tunnel1
-  
+  database-mapping 10.2.2.0/30 locator-set RLOCS
   end
+sh ip lisp map-cache 
 ~~~
 
+<br>
 
-SPOKE
 ~~~
-!@UTM-PH
+!@E3-XTR
 conf t
- crypto ipsec transform-set TS ___
-  mode ___
+ router lisp
+  ipv4 itr
+  ipv4 etr
+  ipv4 itr map-resolver 1.10.1.10
+  ipv4 etr map-server 1.10.1.10 key C1sc0123
+  locator-set RLOCS
+   ipv4-interface e0/1 priority 100 weight 100
   !
- crypto ipsec profile DMVPN-IPSEC
-  ___
-  ___
- !
- interface Tunnel1
-  
+  database-mapping 192.168.3.0/24 locator-set RLOCS
   end
+sh ip lisp map-cache 
 ~~~
 
-
+<br>
 
 ~~~
-!@UTM-JP
+!@E4-XTR
 conf t
- crypto ipsec transform-set TS ___
-  mode ___
+ router lisp
+  ipv4 itr
+  ipv4 etr
+  ipv4 itr map-resolver 1.10.1.10
+  ipv4 etr map-server 1.10.1.10 key C1sc0123
+  locator-set RLOCS
+   ipv4-interface e0/1 priority 100 weight 100
   !
- crypto ipsec profile DMVPN-IPSEC
-  ___
-  ___
- !
- interface Tunnel1
-  
+  database-mapping 192.168.4.0/24 locator-set RLOCS
   end
+sh ip lisp map-cache 
 ~~~
+
+<br>
+
+~~~
+!@E5-XTR
+conf t
+ router lisp
+  ipv4 itr
+  ipv4 etr
+  ipv4 itr map-resolver 1.10.1.10
+  ipv4 etr map-server 1.10.1.10 key C1sc0123
+  locator-set RLOCS
+   ipv4-interface e0/1 priority 100 weight 100
+  !
+  database-mapping 192.168.5.0/24 locator-set RLOCS
+  end
+sh ip lisp map-cache 
+~~~
+
+
+

@@ -1,0 +1,402 @@
+C        10.2.2.0/24 is directly connected, Vlan20
+C        192.168.1.128/27 is directly connected, Vlan100
+
+EIGRP, OSPF, BGP:
+
+configure terminal
+router ospf CCNP
+network 10.2.2.0 0.0.0.255 area 0
+network 192.168.1.128 0.0.0.127 area 0
+
+router eigrp
+network 10.2.2.0 0.0.0.255
+network 192.168.1.128 0.0.0.127
+
+router bgp
+network 10.2.2.0 0.0.0.255 
+network 192.168.1.128 0.0.0.127 area 0
+
+
+
+Correct version
+
+router eigrp CCNP
+	address-family ipv4 unicast autonomous-system 100
+		network 10.2.2.0 0.0.0.255
+		network 192.168.1.128 0.0.0.31
+		exit-address-family
+	end
+	
+P1:
+configure terminal
+	interface ethernet 0/0
+		no shutdown
+		ip address 10.2.1.101 255.255.255.0
+		end
+P2:
+configure terminal
+	interface ethernet 1/0
+		no shutdown
+		ip address 10.2.1.102 255.255.255.0
+		end
+		
+A1:
+configure terminal
+	interface ethernet 0/0
+		switchport mode access
+		switchport access vlan 10
+	
+	do show vlan brief
+	
+A2:
+configure terminal
+	interface ethernet 1/0
+		switchport mode access
+		switchport access vlan 10
+	
+	do show vlan brief
+	
+	
+CCNP can Packet Sniff
+CCNA can configure
+
+R4
+configure terminal
+	no ip routing
+	ip routing
+	router OSPF 1
+		router-id 4.4.4.4
+		exit
+	interface ethernet 3/3
+		no shutdown
+		ip address 208.8.8.100 255.255.255.0
+		ip ospf 1 area 0
+		exit
+	router eigrp 100
+		network 208.8.8.0 0.0.0.255
+		end
+		
+Open wireshark
+Select vmnet8
+ospf || eigrp - in wireshark
+Cisco EIGRP -> Parameters 
+K1 - BW
+K2 - reliability
+K3 - delay
+K4 - loading
+K5 - MTU
+
+or BAD REALM
+
+
+C1:
+show interface ethernet 1/1
+
+conf t
+	router eigrp CCNPLEVEL
+		address-family ipv4 unicast autonomous-system 100
+		network 10.1.4.6 0.0.0.0
+		network 10.2.1.1 0.0.0.0
+		network 10.2.2.1 0.0.0.0
+		network 192.168.1.129 0.0.0.0
+		end
+		
+		
+C2
+
+conf t
+	router eigrp CCNPLEVEL
+		address-family ipv4 unicast autonomous-system 100
+		network 10.1.4.10 0.0.0.0
+		network 10.2.1.2 0.0.0.0
+		network 10.2.2.2 0.0.0.0
+		network 192.168.1.130 0.0.0.0
+		end
+	sh ip eigrp nei
+	
+	
+R4:
+config t
+router eigrp 100
+ no auto-summary
+ network 10.1.4.8 0.0.0.3
+ network 10.1.4.4 0.0.0.3
+ end
+!HOW TO CHECK IF EIGRP IS WORKING PROPERLY:
+SIR: show ip protocols
+SIEN: show ip EIGRP neighbors --> super, meron kapitbahay
+SIET: show ip eigrp topology --> super, madami ang P, P lahat
+show ip eigrp traffic
+show ip route eigrp
+
+
+Add default route 
+P1
+configure terminal
+	ip route 0.0.0.0 0.0.0.0 10.2.1.1 1
+	ip route 0.0.0.0 0.0.0.0 10.2.1.2 5
+	end
+
+P2
+configure terminal
+	ip route 0.0.0.0 0.0.0.0 10.2.1.1 5
+	ip route 0.0.0.0 0.0.0.0 10.2.1.2 1
+	end
+	
+A1
+configure terminal
+router eigrp CCNPLEVEL
+ !
+ address-family ipv4 unicast autonomous-system 100
+  !
+  topology base
+  exit-af-topology
+  network 192.168.1.131 0.0.0.0
+ exit-address-family
+	
+A2
+configure terminal
+router eigrp CCNPLEVEL
+ !
+ address-family ipv4 unicast autonomous-system 100
+  !
+  topology base
+  exit-af-topology
+  network 192.168.1.132 0.0.0.0
+ exit-address-family
+ 
+ 
+ ADVANCE EIGRP CCNP COMMANDS
+ A1
+ configure terminal
+	interface loopback 17
+		ip address 172.17.0.1 255.255.0.0
+	interface loopback 18
+		ip address 172.18.0.1 255.255.0.0
+	interface loopback 19
+		ip address 172.19.0.1 255.255.0.0
+	interface loopback 20
+		ip address 172.20.0.1 255.255.0.0
+	interface loopback 21
+		ip address 172.21.0.1 255.255.0.0
+	end
+		
+
+configure terminal
+router eigrp CCNPLEVEL
+ !
+ address-family ipv4 unicast autonomous-system 100
+  !
+  topology base
+  exit-af-topology
+  network 192.168.1.131 0.0.0.0
+  network 172.17.0.1 0.0.0.0
+  network 172.18.0.1 0.0.0.0
+  network 172.19.0.1 0.0.0.0
+  network 172.20.0.1 0.0.0.0
+  network 172.21.0.1 0.0.0.0
+ exit-address-family
+ 
+ 
+ HOW TO ROUTE SUMMARIZE IN EIGRP,OSPG,BGP
+  network 172.17.0.1
+  network 172.18.0.1
+  network 172.19.0.1
+  network 172.20.0.1
+  network 172.21.0.1
+ CCC method : Count, compare,     check:
+                5    8i 0,8,16,24
+				     or 16 i
+					 
+					 
+				5 routes will be merged to 172.16.0.0 /13
+
+EXAM 32-bit EIGRP
+configure terminal
+	interface vlan 100
+	ip summary-address eigrp 100 172.16.0.0 255.248.0.0
+	
+Ilalagay kung nakanino ang may ari ng IP or route
+
+
+64-bit EIGRP
+
+
+
+Multiarea OSPF
+R4:
+config t
+Int loopback 0
+ ip add 4.4.4.4 255.255.255.255
+router ospf 1
+router-id 4.4.4.4
+network 4.4.4.4 0.0.0.0 area 34
+network 10.1.1.8 0.0.0.3 area 34
+interface e1/2
+   ip ospf network point-to-point
+   !eto lab sa exam sa 2024/2025
+end
+R3:
+config t
+Int loopback 0
+ ip add 3.3.3.3 255.255.255.255
+router ospf 1
+router-id 3.3.3.3
+network 3.3.3.3 0.0.0.0 area 0
+network 10.1.1.4 0.0.0.3 area 0
+network 10.1.1.8 0.0.0.3 area 34
+interface e1/2
+   ip ospf network point-to-point
+end
+R2:
+config t
+Int loopback 0
+ ip add 2.2.2.2 255.255.255.255
+router ospf 1
+router-id 2.2.2.2
+network 2.2.2.2 0.0.0.0 area 0
+network 10.1.1.4 0.0.0.3 area 0
+network 10.1.1.0 0.0.0.3 area 12
+interface e1/2
+   ip ospf priority 255
+  !! eto mismo ang Lab mo:
+end
+R1:
+config t
+Int loopback 0
+ ip add 1.1.1.1 255.255.255.255
+router ospf 1
+router-id 1.1.1.1
+network 1.1.1.1 0.0.0.0 area 12
+network 10.1.1.0 0.0.0.3 area 12
+interface e1/0
+   ip ospf priority 0
+end
+
+
+OSPF checking:
+SIP: sh ip protocols
+SION: sh ip ospf neighbor
+SIOD: sh ip ospf database
+SIRO: sh ip route ospf
+
+
+
+Route distribute
+
+Task3: Eigrp and Ospf Redistribution:
+R4: sikat: Eigrp and OSPF world:
+config T
+router eigrp 100
+redistribute ospf 1 metric 10000 100 255 1 1500                       - show int et1/2 (R4)
+ exit
+router ospf 1
+redistribute eigrp 100 subnets
+end
+
+
+R4(config-router)#redistribute ospf 1 met 
+R4(config-router)#redistribute ospf 1 metric ?
+  <1-4294967295>  Bandwidth metric in Kbits per second
+
+R4(config-router)#redistribute ospf 1 metric 10000 ?
+  <0-4294967295>  EIGRP delay metric, in 10 microsecond units
+
+R4(config-router)#redistribute ospf 1 metric 10000 100 ?
+  <0-255>  EIGRP reliability metric where 255 is 100% reliable
+
+R4(config-router)#redistribute ospf 1 metric 10000 100 255 ?
+  <1-255>  EIGRP Effective bandwidth metric (Loading) where 255 is 100% loaded
+
+R4(config-router)#redistribute ospf 1 metric 10000 100 255 1 ?
+  <1-65535>  EIGRP MTU of the path 
+  
+  
+ SUPER BASIC BGP
+ /24 Public IP
+ atleast 2 Telco w/ 2Mbps CIR
+ Public ASN #
+ 
+ 
+ Basic BGP Configuraton 32 bits
+ 
+ R1
+ configure terminal
+	router bgp 1
+		bgp router-id 1.1.1.1
+		bgp log-neighbor-changes
+		neighbor 208.8.8.4 remote-as 34
+		neighbor 207.7.7.2 remote-as 2
+		neighbor 209.9.9.3 remote-as 3
+		network 208.8.8.0 mask 255.255.255.0
+		network 207.7.7.0 mask 255.255.255.0
+		network 209.9.9.0 mask 255.255.255.0
+		network 10.1.1.0 mask 255.255.255.252
+		end
+		
+ON EXAM, check if 32 or 64 bits
+
+64-bit
+ configure terminal
+	router bgp 1
+		bgp router-id 1.1.1.1
+		bgp log-neighbor-changes
+		address-family ipv4 unicast 
+		neighbor 208.8.8.4 remote-as 34
+		neighbor 207.7.7.2 remote-as 2
+		neighbor 209.9.9.3 remote-as 3
+		neighbor 208.8.8.4 activate
+		neighbor 207.7.7.2 activate
+		neighbor 209.9.9.3 activate
+		network 208.8.8.0 mask 255.255.255.0
+		network 207.7.7.0 mask 255.255.255.0
+		network 209.9.9.0 mask 255.255.255.0
+		network 10.1.1.0 mask 255.255.255.252
+		exit-address-family
+		end
+		
+		
+		
+
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP
+       a - application route
+       + - replicated route, % - next hop override, p - overrides from PfR
+
+Gateway of last resort is 207.7.7.2 to network 0.0.0.0
+
+B*    0.0.0.0/0 [20/0] via 207.7.7.2, 00:03:04
+      8.0.0.0/32 is subnetted, 1 subnets
+B        8.8.8.8 [20/0] via 208.8.8.4, 00:00:07
+      22.0.0.0/32 is subnetted, 1 subnets
+B        22.22.22.22 [20/0] via 207.7.7.2, 00:08:45
+      24.0.0.0/24 is subnetted, 1 subnets
+B        24.2.4.0 [20/0] via 207.7.7.2, 00:03:04
+      25.0.0.0/24 is subnetted, 1 subnets
+B        25.2.5.0 [20/0] via 207.7.7.2, 00:08:45
+      32.0.0.0/24 is subnetted, 1 subnets
+B        32.3.2.0 [20/0] via 207.7.7.2, 00:08:45
+      33.0.0.0/32 is subnetted, 1 subnets
+B        33.33.33.33 [20/0] via 209.9.9.3, 00:08:20
+      35.0.0.0/24 is subnetted, 1 subnets
+B        35.3.5.0 [20/0] via 209.9.9.3, 00:08:20
+      44.0.0.0/32 is subnetted, 1 subnets
+B        44.44.44.44 [20/0] via 208.8.8.4, 00:00:07
+      45.0.0.0/24 is subnetted, 1 subnets
+B        45.4.5.0 [20/0] via 208.8.8.4, 00:00:07
+      55.0.0.0/32 is subnetted, 1 subnets
+B        55.55.55.55 [20/0] via 208.8.8.4, 00:00:07
+
+
+R1:
+CONFIG t
+router ospf 1
+Default-Information Originate
+end
+
+

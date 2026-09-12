@@ -1,0 +1,759 @@
+Traditional Planes of Operation
+1. Control Plane - thinking
+2. Data Plane - forwarding/action
+3. Management Plane - Contact of user to network device
+
+
+Control Plane -> SDN Controller (Cisco Meraki)
+HTTPS Protocol
+
+4. Orchestration Plane - additional plane for SDN - The Controller itself
+
+RESTCONF
+	JSON & XML - only stores data - serialization language
+	443/HTTPS
+	HTTP Methods (Post, Get, Put, delete)
+	
+	
+	
+NETCONF - Alternative of RESTCONF (Older version)
+	XML
+	SSH
+	830
+	RPC - Remote Procedural Calls
+	
+
+
+Cisco SDWAN (Viptela -> Cisco)
+1. vManage	-> cManage
+2. vBond 	-> cValidator
+3. vSmart	-> cController
+4. vEDGE	-> cEdge
+
+EVE-NG LABS
+rivan/C1sc0123
+
+vManage 32897
+Cloud 32902
+
+OMP - Overlay Management Protocol
+DTLS 12346
+
+vManager
+#request nms all status
+
+
+Rivan-vManage# request nms all status
+NMS service proxy
+        Enabled: true
+        Status: running PID:4952 for 278s
+NMS service proxy rate limit
+        Enabled: true
+        Status: running PID:6778 for 306s
+NMS application server
+        Enabled: true
+        Status:  running PID:8130 for 135s
+NMS configuration database
+        Enabled: true
+        Status: running PID:5454 for 231s
+NMS coordination server
+        Enabled: true
+        Status: running PID:6925 for 255s
+NMS messaging server
+        Enabled: true
+        Status: running PID:6867 for 296s
+NMS statistics database
+        Enabled: true
+        Status: running PID:5873 for 261s
+NMS data collection agent
+        Enabled: true
+        Status:  running PID:4706 for 222s
+NMS CloudAgent v2
+        Enabled: true
+        Status: running PID:6390 for 224s
+NMS cloud agent
+        Enabled: true
+        Status:  running PID:4698 for 223s
+NMS SDAVC server
+        Enabled: false
+        Status: not running
+NMS SDAVC proxy
+        Enabled: true
+        Status:  running PID:4727 for 224s
+		
+		
+		
+		
+		
+NMS application server - WEB GUI
+
+Config to Cloud
+### STEP 5 - Configure BGP on CLOUD to establish connection with controllers
+~~~
+!@Cloud (BGP Config)
+conf t
+ int lo8
+  ip add 8.8.8.8 255.255.255.255
+ router bgp 1
+  bgp log-neighbor-changes
+  neighbor 192.168.20.1 remote-as 100
+  neighbor 192.168.20.5 remote-as 100
+  neighbor 192.168.20.9 remote-as 100
+  address-family ipv4
+   neighbor 192.168.20.1 activate
+   neighbor 192.168.20.5 activate
+   neighbor 192.168.20.9 activate
+   neighbor 192.168.20.1 as-override
+   neighbor 192.168.20.5 as-override
+   neighbor 192.168.20.9 as-override
+   network 8.8.8.8 mask 255.255.255.255
+   network 192.168.20.0 mask 255.255.255.0
+   network 172.16.10.0 mask 255.255.255.248
+   network 10.69.255.0 mask 255.255.255.248
+   end
+~~~
+
+password: pass
+
+WEB GUI for vController
+https://10.69.255.13:8443/
+admin/C1sco123
+
+
+
+EVERYTHING IS TIED TO CERTIFICATES
+
+vBOND port 12346 - port to use for sending commands
+
+
+Default configs for vEDGE
+
+vpn 0
+ name "Transport VPN"
+ router
+  bgp 100
+   address-family ipv4-unicast
+    network 192.168.20.0/24
+   !
+   neighbor 192.168.20.6
+    no shutdown
+    remote-as 1
+   !
+  !
+ !
+ interface ge0/0
+  description LAN-Traffic
+  ip address 172.16.1.1/30
+  ipv6 dhcp-client
+  tunnel-interface
+   encapsulation ipsec
+   color private1 restrict
+   allow-service bgp
+   no allow-service dhcp
+   allow-service dns
+   allow-service icmp
+   no allow-service sshd
+   no allow-service netconf
+   no allow-service ntp
+   allow-service ospf
+   no allow-service stun
+   allow-service https
+  !
+  no shutdown
+ !
+ interface ge0/1
+  description INTERNET-Traffic
+  ip address 192.168.20.1/24
+  tunnel-interface
+   encapsulation ipsec
+   color biz-internet
+   allow-service bgp
+   no allow-service dhcp
+   allow-service dns
+   allow-service icmp
+   no allow-service sshd
+   no allow-service netconf
+   no allow-service ntp
+   no allow-service ospf
+   no allow-service stun
+   allow-service https
+  !
+  no shutdown
+ !
+ interface ge0/2
+  shutdown
+ !
+!
+vpn 512
+ name "Management VPN"
+ interface eth0
+  description eth0
+  ip dhcp-client
+  ipv6 dhcp-client
+  no shutdown
+ !
+!
+
+
+
+
+
+
+
+
+
+SDWAN vEDGE Onboarding
+
+Get CA Certificate 
+PKI-SERVER(config)#crypto pki export rivanpki pem terminal 
+
+-----BEGIN CERTIFICATE-----
+MIIDIDCCAgigAwIBAgIBATANBgkqhkiG9w0BAQsFADAhMR8wHQYDVQQDExZyb290
+Y2EuUklWQU5DT1JQLmxvY2FsMB4XDTI2MDExODE5MDIxMloXDTI5MDExNzE5MDIx
+MlowITEfMB0GA1UEAxMWcm9vdGNhLlJJVkFOQ09SUC5sb2NhbDCCASIwDQYJKoZI
+hvcNAQEBBQADggEPADCCAQoCggEBANHmliLVoDJpoP/QYY9BYNoM5nYmqHTiWrcz
+/edesixyK6l4a5e4sFVjFnUxf/+1ND4FIUE3zsDDJEtvmiziO+/ObM+e34uSvQKU
+UoLIsUC96LQ+uwSrcWlA+0EYb9x+uHj1+sKKFE1n2paWcWHYxyy4Fdg0h/8vV4jJ
+/yLvPrsI0Tp8HvZBMiNQmZihliNc9eiBToeWci3FkIbpoylOsih+Pt9gAjHisJpJ
+2mATA0xcz5dt0DHM49zyIYUm4/F8i/NehDi98RanANgBlFVHHdIrcikAtqKq2usg
+iTtxqfRDGfinEp7N2lQcflQmwkwrGrfpTC4FX5+QLtVRst//560CAwEAAaNjMGEw
+DwYDVR0TAQH/BAUwAwEB/zAOBgNVHQ8BAf8EBAMCAYYwHwYDVR0jBBgwFoAUWTJM
+3TFjBLb5mucfAOAjH+36gPQwHQYDVR0OBBYEFFkyTN0xYwS2+ZrnHwDgIx/t+oD0
+MA0GCSqGSIb3DQEBCwUAA4IBAQA3f/bSd3vrB6u5F6nKMufwPoxVkRAnrTba1Ss+
+jvnjJIZ0MbXnZdHaJyZM6Lof58HRE66Kg8sYeyd+VRHthSjR+rBGfqovUqm0mTeS
+4NdwngebSbP/zrZKNsu7o/dazfJOdnNBrSqrWKoDliwXdtfrwWbei6/swX4WBVEF
+EthIAgr2uvKKbKJleBk9j5spAz9JS9nAI2nJ0D/scFbpxcxHtjuNSypGxbvUA6E8
+CihCAdhQxaGsO00S598LTCgtQepq3A0o39ER1u7L2Qa19lZXKr7jVVs7MTJlnXZo
+dVb5NArbTAGGmpvcr8FdxjMN8LPBvD9a22GpnHUkZJxI1iah
+-----END CERTIFICATE-----
+
+
+
+vshell in mindanao to go linux
+insert the certificate as a file
+
+
+INSTALL CA in EDGE
+vEdge-MINDANAO# request root-cert-chain install /home/admin/pkicerts/rivan.ca 
+
+Once installed, generate a CSR then upload to a file (New file)
+vEdge-MINDANAO# request csr upload /home/admin/pkicerts/min.csr  
+
+
+VERY STRICT EVERYTHING SHOULD MATCH
+
+vEdge-MINDANAO# request csr upload /home/admin/pkicerts/min.csr  
+Uploading CSR via VPN 0
+Enter organization-unit name            : RIVANCORP
+Re-enter organization-unit name          : RIVANCORP
+Generated CSR for vedge device
+Copying /usr/share/viptela/server.csr to /home/admin/pkicerts/min.csr via VPN 0
+send_install_csr_notification
+CSR upload successful
+CSR upload successful
+
+
+Go back to vhsell to get contents of csr
+vEdge-MINDANAO:~$ cat /home/admin/pkicerts/min.csr  
+-----BEGIN CERTIFICATE REQUEST-----
+MIIDSTCCAjECAQAwgcgxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlh
+MREwDwYDVQQHEwhTYW4gSm9zZTESMBAGA1UECxMJUklWQU5DT1JQMRYwFAYDVQQK
+Ew1DaXNjbyBTeXN0ZW1zMUEwPwYDVQQDEzh2ZWRnZS01ZjRiZTE3Yi04ZTZhLTQ2
+YWUtOTQ2Ny0zNWIyNmY1ZDU2OWEtMS52aXB0ZWxhLmNvbTEiMCAGCSqGSIb3DQEJ
+ARYTc3VwcG9ydEB2aXB0ZWxhLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCC
+AQoCggEBAKDZHbxLY/sNb33mh0NkY1Empr2om9foe3QHOr8RCO2ID+ansVjgcSG+
+oCdNJDf0tFdL1ErfR5sKAbDe6PXkMdW8JP1V7wiIKZL/61hA65PkWDsu7Q9dqYF+
+P9EP1biclCgAiI0h4sZzGmRUHNlHnpVdXcCNOS27Bbma7TauPP9hSofWHgvS/FXz
+MPI598m5xdxfkocabypD0oMAMi/4fPZW376oo69a5K8RriLTO5MmonAM3kaXqXBe
+qk8NJJa7fTRmEg+LPWM3TlvCjUVBDISvEmtir8ii85y0rGdeVdgu9aOqoTHW3Vh9
+BuuAMnPXPP41QFuZM+JFMepUVShw3esCAwEAAaA7MDkGCSqGSIb3DQEJDjEsMCow
+CQYDVR0TBAIwADAdBgNVHQ4EFgQUeQ5dIVNA4/yP5NmdoCB5KKPDdbowDQYJKoZI
+hvcNAQELBQADggEBACDXNqERcp0Z2d2d0rw+CEujlZ02cNCb2ZO7Ftg2OwAig29I
+Sk6Mi1GmhR2Yc2+oyYPv/1XP8VjaatM0RUQNTZSMy9VxtwRKKhauYCzfPlxYZDjh
+3OlZy5V6ht89KZ0eEDMsOSmdxB03gUpVnzuahCzeqM5eHqjE12g6QnAoL4SOAkBe
+OLdXlc7Jlt4xROjulpu6MARHUh8V3pvuGVcNohEMWk7/2AsBfJxdmjUpoYEWGFHD
+Y9oYpWL/B2omrFlYdwYFPRoL5fErBEbteduC9XTKhFwRdAHfg6pRw0kct0pFbs3G
+6lsqAsj2fMgoFnRQLYx6sfIX7fX+oxU+duG86hQ=
+-----END CERTIFICATE REQUEST-----
+
+
+check certificate contents, it should match
+
+vEdge-MINDANAO:~/pkicerts$ openssl x509 -in rivan.ca -text -noout
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 1 (0x1)
+        Signature Algorithm: sha256WithRSAEncryption
+        Issuer: CN = rootca.RIVANCORP.local
+        Validity
+            Not Before: Jan 18 19:02:12 2026 GMT
+            Not After : Jan 17 19:02:12 2029 GMT
+        Subject: CN = rootca.RIVANCORP.local
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                RSA Public-Key: (2048 bit)
+                Modulus:
+                    00:d1:e6:96:22:d5:a0:32:69:a0:ff:d0:61:8f:41:
+                    60:da:0c:e6:76:26:a8:74:e2:5a:b7:33:fd:e7:5e:
+                    b2:2c:72:2b:a9:78:6b:97:b8:b0:55:63:16:75:31:
+                    7f:ff:b5:34:3e:05:21:41:37:ce:c0:c3:24:4b:6f:
+                    9a:2c:e2:3b:ef:ce:6c:cf:9e:df:8b:92:bd:02:94:
+                    52:82:c8:b1:40:bd:e8:b4:3e:bb:04:ab:71:69:40:
+                    fb:41:18:6f:dc:7e:b8:78:f5:fa:c2:8a:14:4d:67:
+                    da:96:96:71:61:d8:c7:2c:b8:15:d8:34:87:ff:2f:
+                    57:88:c9:ff:22:ef:3e:bb:08:d1:3a:7c:1e:f6:41:
+                    32:23:50:99:98:a1:96:23:5c:f5:e8:81:4e:87:96:
+                    72:2d:c5:90:86:e9:a3:29:4e:b2:28:7e:3e:df:60:
+                    02:31:e2:b0:9a:49:da:60:13:03:4c:5c:cf:97:6d:
+                    d0:31:cc:e3:dc:f2:21:85:26:e3:f1:7c:8b:f3:5e:
+                    84:38:bd:f1:16:a7:00:d8:01:94:55:47:1d:d2:2b:
+                    72:29:00:b6:a2:aa:da:eb:20:89:3b:71:a9:f4:43:
+                    19:f8:a7:12:9e:cd:da:54:1c:7e:54:26:c2:4c:2b:
+                    1a:b7:e9:4c:2e:05:5f:9f:90:2e:d5:51:b2:df:ff:
+                    e7:ad
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: critical
+                CA:TRUE
+            X509v3 Key Usage: critical
+                Digital Signature, Certificate Sign, CRL Sign
+            X509v3 Authority Key Identifier: 
+                keyid:59:32:4C:DD:31:63:04:B6:F9:9A:E7:1F:00:E0:23:1F:ED:FA:80:F4
+
+            X509v3 Subject Key Identifier: 
+                59:32:4C:DD:31:63:04:B6:F9:9A:E7:1F:00:E0:23:1F:ED:FA:80:F4
+    Signature Algorithm: sha256WithRSAEncryption
+         37:7f:f6:d2:77:7b:eb:07:ab:b9:17:a9:ca:32:e7:f0:3e:8c:
+         55:91:10:27:ad:36:da:d5:2b:3e:8e:f9:e3:24:86:74:31:b5:
+         e7:65:d1:da:27:26:4c:e8:ba:1f:e7:c1:d1:13:ae:8a:83:cb:
+         18:7b:27:7e:55:11:ed:85:28:d1:fa:b0:46:7e:aa:2f:52:a9:
+         b4:99:37:92:e0:d7:70:9e:07:9b:49:b3:ff:ce:b6:4a:36:cb:
+         bb:a3:f7:5a:cd:f2:4e:76:73:41:ad:2a:ab:58:aa:03:96:2c:
+         17:76:d7:eb:c1:66:de:8b:af:ec:c1:7e:16:05:51:05:12:d8:
+         48:02:0a:f6:ba:f2:8a:6c:a2:65:78:19:3d:8f:9b:29:03:3f:
+         49:4b:d9:c0:23:69:c9:d0:3f:ec:70:56:e9:c5:cc:47:b6:3b:
+         8d:4b:2a:46:c5:bb:d4:03:a1:3c:0a:28:42:01:d8:50:c5:a1:
+         ac:3b:4d:12:e7:df:0b:4c:28:2d:41:ea:6a:dc:0d:28:df:d1:
+         11:d6:ee:cb:d9:06:b5:f6:56:57:2a:be:e3:55:5b:3b:31:32:
+         65:9d:76:68:75:56:f9:34:0a:db:4c:01:86:9a:9b:dc:af:c1:
+         5d:c6:33:0d:f0:b3:c1:bc:3f:5a:db:61:a9:9c:75:24:64:9c:
+         48:d6:26:a1
+		 
+		 
+		 
+Signing of PKI Server of the certificate
+PKI-SERVER#crypto pki server rivanpki request pkcs10 terminal
+
+then copy and paste the request certificate
+
+-----BEGIN CERTIFICATE REQUEST-----
+MIIDSTCCAjECAQAwgcgxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlh
+MREwDwYDVQQHEwhTYW4gSm9zZTESMBAGA1UECxMJUklWQU5DT1JQMRYwFAYDVQQK
+Ew1DaXNjbyBTeXN0ZW1zMUEwPwYDVQQDEzh2ZWRnZS01ZjRiZTE3Yi04ZTZhLTQ2
+YWUtOTQ2Ny0zNWIyNmY1ZDU2OWEtMS52aXB0ZWxhLmNvbTEiMCAGCSqGSIb3DQEJ
+ARYTc3VwcG9ydEB2aXB0ZWxhLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCC
+AQoCggEBAKDZHbxLY/sNb33mh0NkY1Empr2om9foe3QHOr8RCO2ID+ansVjgcSG+
+oCdNJDf0tFdL1ErfR5sKAbDe6PXkMdW8JP1V7wiIKZL/61hA65PkWDsu7Q9dqYF+
+P9EP1biclCgAiI0h4sZzGmRUHNlHnpVdXcCNOS27Bbma7TauPP9hSofWHgvS/FXz
+MPI598m5xdxfkocabypD0oMAMi/4fPZW376oo69a5K8RriLTO5MmonAM3kaXqXBe
+qk8NJJa7fTRmEg+LPWM3TlvCjUVBDISvEmtir8ii85y0rGdeVdgu9aOqoTHW3Vh9
+BuuAMnPXPP41QFuZM+JFMepUVShw3esCAwEAAaA7MDkGCSqGSIb3DQEJDjEsMCow
+CQYDVR0TBAIwADAdBgNVHQ4EFgQUeQ5dIVNA4/yP5NmdoCB5KKPDdbowDQYJKoZI
+hvcNAQELBQADggEBACDXNqERcp0Z2d2d0rw+CEujlZ02cNCb2ZO7Ftg2OwAig29I
+Sk6Mi1GmhR2Yc2+oyYPv/1XP8VjaatM0RUQNTZSMy9VxtwRKKhauYCzfPlxYZDjh
+3OlZy5V6ht89KZ0eEDMsOSmdxB03gUpVnzuahCzeqM5eHqjE12g6QnAoL4SOAkBe
+OLdXlc7Jlt4xROjulpu6MARHUh8V3pvuGVcNohEMWk7/2AsBfJxdmjUpoYEWGFHD
+Y9oYpWL/B2omrFlYdwYFPRoL5fErBEbteduC9XTKhFwRdAHfg6pRw0kct0pFbs3G
+6lsqAsj2fMgoFnRQLYx6sfIX7fX+oxU+duG86hQ=
+-----END CERTIFICATE REQUEST-----
+
+
+% Granted certificate:
+-----BEGIN CERTIFICATE-----
+MIIDuDCCAqCgAwIBAgIBBzANBgkqhkiG9w0BAQsFADAhMR8wHQYDVQQDExZyb290
+Y2EuUklWQU5DT1JQLmxvY2FsMB4XDTI2MDkxMjExNTU0MFoXDTI3MDkxMjExNTU0
+MFowgcgxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMREwDwYDVQQH
+EwhTYW4gSm9zZTESMBAGA1UECxMJUklWQU5DT1JQMRYwFAYDVQQKEw1DaXNjbyBT
+eXN0ZW1zMUEwPwYDVQQDEzh2ZWRnZS01ZjRiZTE3Yi04ZTZhLTQ2YWUtOTQ2Ny0z
+NWIyNmY1ZDU2OWEtMS52aXB0ZWxhLmNvbTEiMCAGCSqGSIb3DQEJARYTc3VwcG9y
+dEB2aXB0ZWxhLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKDZ
+HbxLY/sNb33mh0NkY1Empr2om9foe3QHOr8RCO2ID+ansVjgcSG+oCdNJDf0tFdL
+1ErfR5sKAbDe6PXkMdW8JP1V7wiIKZL/61hA65PkWDsu7Q9dqYF+P9EP1biclCgA
+iI0h4sZzGmRUHNlHnpVdXcCNOS27Bbma7TauPP9hSofWHgvS/FXzMPI598m5xdxf
+kocabypD0oMAMi/4fPZW376oo69a5K8RriLTO5MmonAM3kaXqXBeqk8NJJa7fTRm
+Eg+LPWM3TlvCjUVBDISvEmtir8ii85y0rGdeVdgu9aOqoTHW3Vh9BuuAMnPXPP41
+QFuZM+JFMepUVShw3esCAwEAAaNTMFEwDwYDVR0TAQH/BAUwAwEB/zAfBgNVHSME
+GDAWgBRZMkzdMWMEtvma5x8A4CMf7fqA9DAdBgNVHQ4EFgQUeQ5dIVNA4/yP5Nmd
+oCB5KKPDdbowDQYJKoZIhvcNAQELBQADggEBANHkeWTMzkgK/V1X1LWjt+40I3pN
++QlyprFWgBs267NOzpOfDxgpdmyZUyz/CwBk4vm7cdCzznoA02PBRJcMkAIc9W1l
++nWfnX/Cv7JAc6wkZ91OUlznhAqqBc7ZtUuXcl/TgRBOv2Z4uYXmrlbrMKVDFJ1Y
+RtqhnQwVbQze9fMdAg+NJCYSBMyiep8Q2m97OBOv8AVQu+8N+6sV7mdpRzs6Dr/9
+ZTNDEE4fnDZhLD75uO5DgySvmgYriKo2Yle1uPM8Prsd+7nyR0DdgfmF89VCU070
+Ucgl+tXn9ZJgsKQOXOFqt8tcPF8c1ijJgeTnnXmUfHkWo8yfA464kapnFoA=
+-----END CERTIFICATE-----
+
+
+
+GRANTED Cerificate will be inserted to vEDGE
+vi grant.ca, then paste the granted certificate
+
+vEdge-MINDANAO# request certificate install /home/admin/pkicerts/grant.ca 
+Installing certificate via VPN 0
+Copying /home/admin/pkicerts/grant.ca to /tmp/vconfd/server.crt.tmp via VPN 0
+Got certificate_id 07 for /tmp/vconfd/server.crt.tmp vmanage_signed false
+cp -f "/usr/share/viptela/tmp_csr/server.key" "/usr/share/viptela/server.key"
+moving temp Cert "/tmp/vconfd/server.crt.tmp" to Cert "/usr/share/viptela/vedge_certs/client_07.crt"
+Moving /tmp/vconfd/server.crt.tmp to /usr/share/viptela/vedge_certs/client_07.crt via VPN 0
+
+
+Successfully installed the certificate 0
+Certificate Install Successful
+
+
+vEdge-MINDANAO# show certificate serial 
+Chassis number: 5f4be17b-8e6a-46ae-9467-35b26f5d569a serial number: 07
+
+^^ Need by vManage along with certificate
+
+
+
+Go to vmanage CLI and vBond
+Rivan-vManage# request vedge add chassis-num 5f4be17b-8e6a-46ae-9467-35b26f5d569a serial-num 07
+Rivan-vBond# request vedge add chassis-num 5f4be17b-8e6a-46ae-9467-35b26f5d569a serial-num 07
+
+
+NOT POSSIBLE IN GUI WHEN ADDING vEDGE
+
+
+
+-------------
+DMVPN
+Dynamic Multipoint Virtual Private Network (DMVPN)
+LAB #6 RST HAYUP
+Windows Server - Enterprise CA
+
+Install windows server eval on VMWare
+Powershell ISE
+set-netfirewallprofile -name private,public,domain -enabled false
+rename-computer ccnpM				M = Monitor#	(21)
+ncpa.cpl
+
+To connect Windows Server in RSTHAYUP
+ethernet 0
+Rename to NAT
+Uncheck IPv6
+Configure IPv4
+208.8.8.8/24 - DG 208.8.8.2
+DNS 8.8.8.8
+Advance -> uncheck automatic metric, set to 100 - to set prioritization of DNS Queries
+
+
+ethernet 1
+Rename to VMNET2
+Uncheck IPv6
+Configure IPv4
+192.168.102.8/24 no DG and DNS
+Advance -> uncheck automatic metric, set to 100 - to set prioritization of DNS Queries
+
+
+
+ethernet 2
+Rename to VMNET16
+Uncheck IPv6
+Configure IPv4
+10.69.255.4/29 no DG (.3 I used in lab)
+DNS: 127.0.0.1
+Advance -> uncheck automatic metric, set to 1 - to set prioritization of DNS Queries
+Navigate to DNS
+Append these DNS suffixes (in order)
+ccnpM.com
+Also add in DNS suffix for this connection	
+
+
+
+
+restart SERVER
+Install Active directoy
+SPecify alteranate source path
+Use ISO Drive letter for D:\Sources
+
+Promote to a Domain Controller
+Add a new forest
+ccnp21.com
+then next next
+
+
+
+Create user
+ca (Copy administrator)
+
+COnfig in I1, I2,I3,E1,E2,E3,E4,E5
+
+line 2348 onwards
+
+
+
+Why DMVPN?
+Old S2S VPN - need source and destination
+
+Need for DMVPN
+NHRP
+EIGRP
+
+Phase 1
+	Authentication (PSK/Cert)
+	IKE Phase 1 - Algorithms
+	Integrity
+	DH (generates ephemeral key for unique shared secret key in a session)
+
+Once done, IKE SA is formed for phase 2	- comms between 2 devices
+Phase 2
+IPSEC - data traffic
+
+
+### PHASE 1 - IKEv2
+
+1. PHASE 1 PROPOSAL
+2. PHASE 1 POLICY
+3. PHASE 1 KEYRING
+4. PHASE 1 PROFILE
+
+__HUB__
+~~~
+!@E1,E2
+conf t
+ crypto ikev2 proposal PROP1
+  encr aes-cbc-256
+  integrity sha256
+  group 14
+ crypto ikev2 proposal PROP2
+  encr aes-gcm-256
+  prf sha256
+  group 14
+ !
+ crypto ikev2 policy IKEV2-POL1
+  proposal PROP1
+  proposal PROP2
+ !
+ crypto ikev2 keyring KEY1
+  peer DMVPN-EDGES
+   address 0.0.0.0  0.0.0.0
+   pre-shared-key C1sc0123
+ !
+ crypto ikev2 profile IKEV2-PROF1
+  match identity remote address 0.0.0.0  0.0.0.0
+  authentication remote pre-share
+  authentication local pre-share
+  keyring local KEY1
+  lifetime 86400
+  end
+~~~
+
+<br>
+
+__SPOKES__
+~~~
+!@E3,E4,E5
+conf t
+ crypto ikev2 proposal PROP1
+  encr aes-cbc-256
+  integrity sha256
+  group 14
+ crypto ikev2 proposal PROP2
+  encr aes-gcm-256
+  prf sha256
+  group 14
+ !
+ crypto ikev2 policy IKEV2-POL1
+  proposal PROP1
+  proposal PROP2
+ !
+ crypto ikev2 keyring KEY1
+  peer HUB1
+   address 1.10.1.10 255.255.255.255
+   pre-shared-key C1sc0123
+  peer HUB2
+   address 2.20.2.20 255.255.255.255
+   pre-shared-key C1sc0123
+ !
+ crypto ikev2 profile IKEV2-PROF1
+  match identity remote address 1.10.1.10
+  match identity remote address 2.20.2.20
+  authentication remote pre-share
+  authentication local pre-share
+  keyring local KEY1
+  lifetime 86400
+  end
+~~~
+
+
+&nbsp;
+---
+&nbsp;
+
+
+### PHASE 2 - IPSec
+
+1. PHASE 2 TRANSFORM SET
+2. PHASE 2 PROFILE
+
+~~~
+!@E1,E2,E3,E4,E5
+conf t
+ crypto ipsec transform-set TS1 esp-aes 256 esp-sha256-hmac
+  mode tunnel
+ crypto ipsec transform-set TS2 esp-gcm 256
+  mode tunnel
+ !
+ crypto ipsec profile IPSEC-PROF1
+  set transform-set TS1 TS2
+  set ikev2-profile IKEV2-PROF1
+  set pfs group14
+  end
+~~~
+
+<br>
+
+~~~
+!@E1
+conf t
+ int tunnel0
+  ip add 172.16.1.254 255.255.255.0
+  tunnel mode gre multipoint
+  tunnel source e0/1
+  tunnel protection ipsec profile IPSEC-PROF1
+  ip nhrp network-id 12345
+  ip nhrp authentication C1sc0123
+  ip nhrp map multicast dynamic
+  ip nhrp redirect
+ !
+ no ip access-list extended NAT
+ ip access-list extended NAT
+  deny ip host 10.1.1.1 host 10.2.2.1
+  deny ip host 10.1.1.1 192.168.3.0 0.0.0.255
+  deny ip host 10.1.1.1 192.168.4.0 0.0.0.255
+  deny ip host 10.1.1.1 192.168.5.0 0.0.0.255
+  permit ip 10.1.1.0 0.0.0.3 any
+  end
+~~~
+
+<br>
+
+~~~
+!@E2
+conf t
+ int tunnel0
+  ip add 172.16.1.253 255.255.255.0
+  tunnel mode gre multipoint
+  tunnel source e0/1
+  tunnel protection ipsec profile IPSEC-PROF1
+  ip nhrp network-id 12345
+  ip nhrp authentication C1sc0123
+  ip nhrp map multicast dynamic
+  ip nhrp redirect
+ !
+ no ip access-list extended NAT
+ ip access-list extended NAT
+  deny ip host 10.2.2.1 host 10.1.1.1
+  deny ip host 10.2.2.1 192.168.3.0 0.0.0.255
+  deny ip host 10.2.2.1 192.168.4.0 0.0.0.255
+  deny ip host 10.2.2.1 192.168.5.0 0.0.0.255
+  permit ip 10.2.2.0 0.0.0.3 any
+  end
+~~~
+
+<br>
+
+~~~
+!@E3
+conf t
+ int tunnel0
+  ip add 172.16.1.3 255.255.255.0
+  tunnel mode gre multipoint
+  tunnel source e0/1
+  tunnel protection ipsec profile IPSEC-PROF1
+  ip nhrp network-id 12345
+  ip nhrp authentication C1sc0123
+  ip nhrp map 172.16.1.254  1.10.1.10
+  ip nhrp map 172.16.1.253  2.20.2.20
+  ip nhrp map multicast 1.10.1.10
+  ip nhrp map multicast 2.20.2.20
+  ip nhrp nhs 172.16.1.254
+  ip nhrp nhs 172.16.1.253
+  ip nhrp shortcut
+!
+ no ip access-list extended NAT
+ ip access-list extended NAT
+  deny ip host 192.168.3.101 host 10.1.1.1
+  deny ip host 192.168.3.101 host 10.2.2.1
+  deny ip host 192.168.3.101 192.168.4.0 0.0.0.255
+  deny ip host 192.168.3.101 192.168.5.0 0.0.0.255
+  permit ip 192.168.3.0 0.0.0.255 any
+  end
+~~~
+
+<br>
+
+~~~
+!@E4
+conf t
+ int tunnel0
+  ip add 172.16.1.4 255.255.255.0
+  tunnel mode gre multipoint
+  tunnel source e0/1
+  tunnel protection ipsec profile IPSEC-PROF1
+  ip nhrp network-id 12345
+  ip nhrp authentication C1sc0123
+  ip nhrp map 172.16.1.254  1.10.1.10
+  ip nhrp map 172.16.1.253  2.20.2.20
+  ip nhrp map multicast 1.10.1.10
+  ip nhrp map multicast 2.20.2.20
+  ip nhrp nhs 172.16.1.254
+  ip nhrp nhs 172.16.1.253
+  ip nhrp shortcut
+ !
+ no ip access-list extended NAT
+ ip access-list extended NAT
+  deny ip host 192.168.4.101 host 10.1.1.1
+  deny ip host 192.168.4.101 host 10.2.2.1
+  deny ip host 192.168.4.101 192.168.3.0 0.0.0.255
+  deny ip host 192.168.4.101 192.168.5.0 0.0.0.255
+  permit ip 192.168.4.0 0.0.0.255 any
+  end
+~~~
+
+<br>
+
+~~~
+!@E5
+conf t
+ int tunnel0
+  ip add 172.16.1.5 255.255.255.0
+  tunnel mode gre multipoint
+  tunnel source e0/1
+  tunnel protection ipsec profile IPSEC-PROF1
+  ip nhrp network-id 12345
+  ip nhrp authentication C1sc0123
+  ip nhrp map 172.16.1.254  1.10.1.10
+  ip nhrp map 172.16.1.253  2.20.2.20
+  ip nhrp map multicast 1.10.1.10
+  ip nhrp map multicast 2.20.2.20
+  ip nhrp nhs 172.16.1.254
+  ip nhrp nhs 172.16.1.253
+  ip nhrp shortcut
+ !
+ no ip access-list extended NAT
+ ip access-list extended NAT
+  deny ip host 192.168.5.101 host 10.1.1.1
+  deny ip host 192.168.5.101 host 10.2.2.1
+  deny ip host 192.168.5.101 192.168.3.0 0.0.0.255
+  deny ip host 192.168.5.101 192.168.4.0 0.0.0.255
+  permit ip 192.168.5.0 0.0.0.255 any
+  end
+~~~
+
+
+&nbsp;
+---
+&nbsp;
